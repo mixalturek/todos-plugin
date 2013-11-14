@@ -68,6 +68,15 @@ eclipse:
 
 
 ###############################################################################
+#### Compile
+
+.PHONY: compile
+compile:
+	# mvn generate-sources
+	mvn compile
+
+
+###############################################################################
 #### Build the plugin
 
 .PHONY: install
