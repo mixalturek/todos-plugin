@@ -23,6 +23,8 @@
  */
 package org.jenkinsci.plugins.todos.model;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -31,7 +33,10 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  * @author Michal Turek
  */
-public class TodosComment {
+public class TodosComment implements Serializable {
+	/** Serial version UID. */
+	private static final long serialVersionUID = 0;
+
 	/** The pattern using which this comment was found. */
 	@XmlAttribute
 	private final String pattern;

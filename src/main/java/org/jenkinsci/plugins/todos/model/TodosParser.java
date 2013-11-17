@@ -137,7 +137,7 @@ public class TodosParser implements FilePath.FileCallable<TodosReport> {
 			return new TodosReport();
 		}
 
-		logger.format("Parsing file: %s %s\n", file.getAbsolutePath(),
+		logger.format("Processing file: %s %s\n", file.getAbsolutePath(),
 				TodosConstants.JENKINS_TODOS_PLUGIN);
 
 		String W3C_XML_SCHEMA_NS_URI = "http://www.w3.org/2001/XMLSchema";

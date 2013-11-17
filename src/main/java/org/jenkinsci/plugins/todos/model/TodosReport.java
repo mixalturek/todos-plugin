@@ -23,6 +23,7 @@
  */
 package org.jenkinsci.plugins.todos.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +41,10 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(namespace = "http://todos.sourceforge.net", name = "comments")
-public class TodosReport {
+public class TodosReport implements Serializable {
+	/** Serial version UID. */
+	private static final long serialVersionUID = 0;
+
 	/** All comments that were found. */
 	@XmlElement(namespace = "http://todos.sourceforge.net", name = "comment", type = TodosComment.class)
 	private final List<TodosComment> comments;
@@ -94,8 +98,11 @@ public class TodosReport {
 	 *         items from the instance passed in the parameter
 	 */
 	public TodosReport concatenate(TodosReport report) {
+		String version = (!this.version.isEmpty()) ? this.version
+				: report.version;
+
 		List<TodosComment> tmpList = new ArrayList<TodosComment>(comments);
 		tmpList.addAll(report.getComments());
-		return new TodosReport(tmpList);
+		return new TodosReport(tmpList, version);
 	}
 }
