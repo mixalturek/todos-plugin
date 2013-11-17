@@ -42,7 +42,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RectangleInsets;
 
 /**
- * TODO: Description.
+ * Build a trend chart.
  * 
  * @author Michal Turek
  */
@@ -50,13 +50,19 @@ public class TodosChartBuilder implements Serializable {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
+	/**
+	 * Build a trend chart from provided data.
+	 * 
+	 * @param action
+	 *            the build action
+	 * @return the trend chart
+	 */
 	public static JFreeChart buildChart(TodosBuildAction action) {
-
-		String strLines = Messages.Todos_ReportSummary_Lines();
+		String strComments = Messages.Todos_ReportSummary_Comments();
 
 		JFreeChart chart = ChartFactory.createStackedAreaChart(null, null,
-				strLines, buildDataset(action), PlotOrientation.VERTICAL, true,
-				false, true);
+				strComments, buildDataset(action), PlotOrientation.VERTICAL,
+				true, false, true);
 
 		chart.setBackgroundPaint(Color.white);
 
@@ -86,6 +92,13 @@ public class TodosChartBuilder implements Serializable {
 		return chart;
 	}
 
+	/**
+	 * Build a data set that will be shown.
+	 * 
+	 * @param lastAction
+	 *            the last build action
+	 * @return the data set
+	 */
 	private static CategoryDataset buildDataset(TodosBuildAction lastAction) {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
 

@@ -26,7 +26,7 @@ package org.jenkinsci.plugins.todos;
 import hudson.model.AbstractBuild;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.jenkinsci.plugins.todos.model.TodosComment;
@@ -58,7 +58,7 @@ public class TodosResult implements Serializable {
 	}
 
 	public Map<String, Integer> occurrencesOfPattern() {
-		Map<String, Integer> results = Collections.emptyMap();
+		Map<String, Integer> results = new HashMap<String, Integer>();
 
 		for (TodosComment comment : report.getComments()) {
 			Integer num = results.get(comment.getPattern());

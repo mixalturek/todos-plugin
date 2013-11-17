@@ -29,7 +29,7 @@ import hudson.util.StackedAreaRenderer2;
 import org.jfree.data.category.CategoryDataset;
 
 /**
- * TODO: Description.
+ * Chart area renderer.
  * 
  * @author Michal Turek
  */
@@ -41,12 +41,10 @@ public class TodosAreaRenderer extends StackedAreaRenderer2 {
 	private final String url;
 
 	/**
-	 * Creates a new instance of <code>AbstractAreaRenderer</code>.
+	 * Constructor initializing members.
 	 * 
 	 * @param url
 	 *            base URL of the graph links
-	 * @param toolTipProvider
-	 *            tooltip provider for the clickable map
 	 */
 	public TodosAreaRenderer(String url) {
 		super();

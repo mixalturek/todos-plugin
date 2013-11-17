@@ -42,7 +42,7 @@ public class TodosReportSummary implements Serializable {
 
 		if ((report != null) && (previous != null)) {
 
-			String strLines = Messages.Todos_ReportSummary_Lines();
+			String strComments = Messages.Todos_ReportSummary_Comments();
 			String strFiles = Messages.Todos_ReportSummary_Files();
 			String strAnd = Messages.Todos_ReportSummary_and();
 			String strLanguages = Messages.Todos_ReportSummary_Languages();
@@ -68,7 +68,7 @@ public class TodosReportSummary implements Serializable {
 			builder.append("report.getLineCountString()");
 			printDifference(0, 42, builder);
 
-			builder.append(" " + strLines + "</a> in ");
+			builder.append(" " + strComments + "</a> in ");
 			builder.append("report.getFileCountString()");
 			printDifference(0, 42, builder);
 
