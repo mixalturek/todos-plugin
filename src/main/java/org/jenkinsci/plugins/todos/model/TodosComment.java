@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlValue;
  * @author Michal Turek
  */
 public class TodosComment {
-	/** The pattern for which this comment was found. */
+	/** The pattern using which this comment was found. */
 	@XmlAttribute
 	private final String pattern;
 
@@ -52,7 +52,7 @@ public class TodosComment {
 	 * Constructor initializing members.
 	 * 
 	 * @param pattern
-	 *            the pattern for which this comment was found
+	 *            the pattern using which this comment was found
 	 * @param file
 	 *            the input file where the comment was found
 	 * @param line
@@ -68,7 +68,7 @@ public class TodosComment {
 	}
 
 	/**
-	 * Constructor required by JAXB.
+	 * This constructor is required by JAXB.
 	 */
 	@SuppressWarnings("unused")
 	private TodosComment() {

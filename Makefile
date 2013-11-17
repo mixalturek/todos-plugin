@@ -98,6 +98,8 @@ run:
 
 .PHONY: package
 package:
+	# To fix failing tests during mvn package.
+	# mvn -DargLine="-Djna.nosys=true" $(SKIP_TESTS_OPT) package
 	mvn $(SKIP_TESTS_OPT) package
 
 

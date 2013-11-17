@@ -76,7 +76,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 			BuildListener listener) {
 		FilePath workspace = build.getWorkspace();
 		PrintStream logger = listener.getLogger();
-		TodosParser parser = new TodosParser(getRealPattern());
+		TodosParser parser = new TodosParser(getRealPattern(), logger);
 		TodosReport report = null;
 
 		try {

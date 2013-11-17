@@ -47,7 +47,7 @@ public class TodosReport {
 
 	/** The version of the file format. */
 	@XmlAttribute
-	private final transient String version;
+	private final String version;
 
 	/**
 	 * Constructor initializing an empty instance.
