@@ -4,7 +4,7 @@
     xmlns:t="/lib/hudson"
 	xmlns:f="/lib/form"
     xmlns:i="jelly:fmt">
-    <t:summary icon="/plugin/todos/icons/sloccount-48.png">
+    <t:summary icon="/plugin/todos/icons/todos-48.png">
 		${it.summary}
 		<ul>
 		${it.details}

@@ -5,7 +5,7 @@
 		<st:include it="${it.owner}" page="sidepanel.jelly" />
 		<l:main-panel>
 
-			<h1>${%SLOCCount Results}</h1>
+			<h1>${%TODOs Results}</h1>
 
 	        <st:include page="/tabview/main.jelly" />
 
