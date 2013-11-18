@@ -26,7 +26,11 @@ package org.jenkinsci.plugins.todos.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -85,6 +89,11 @@ public class TodosReport implements Serializable {
 		this.version = version;
 	}
 
+	/**
+	 * Get all comments.
+	 * 
+	 * @return the comments
+	 */
 	public List<TodosComment> getComments() {
 		return Collections.unmodifiableList(comments);
 	}
@@ -104,5 +113,99 @@ public class TodosReport implements Serializable {
 		List<TodosComment> tmpList = new ArrayList<TodosComment>(comments);
 		tmpList.addAll(report.getComments());
 		return new TodosReport(tmpList, version);
+	}
+
+	/**
+	 * Get total number of comments.
+	 * 
+	 * @return the number of comments
+	 */
+	public int getCommentsCount() {
+		return comments.size();
+	}
+
+	/**
+	 * Get number of comments containing a pattern.
+	 * 
+	 * @param pattern
+	 *            the pattern
+	 * @return the number of comments with the specified pattern
+	 */
+	public int getCommentsWithPatternCount(String pattern) {
+		if (pattern == null) {
+			return 0;
+		}
+
+		int num = 0;
+
+		for (TodosComment comment : comments) {
+			if (pattern.equals(comment.getPattern())) {
+				++num;
+			}
+		}
+
+		return num;
+	}
+
+	/**
+	 * Get mapping of patterns to their counts in the comments.
+	 * 
+	 * @return the mapping; the key is pattern, the value is the number of its
+	 *         occurrences in the comments
+	 */
+	public Map<String, Integer> getPatternsToCountMapping() {
+		Map<String, Integer> results = new HashMap<String, Integer>();
+
+		for (TodosComment comment : getComments()) {
+			Integer num = results.get(comment.getPattern());
+
+			if (num == null) {
+				results.put(comment.getPattern(), 1);
+			} else {
+				results.put(comment.getPattern(), num + 1);
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Get files containing at least one comment.
+	 * 
+	 * @return the files containing at least one comment
+	 */
+	public Set<String> getFiles() {
+		Set<String> files = new HashSet<String>();
+
+		for (TodosComment comment : comments) {
+			files.add(comment.getFile());
+		}
+
+		return files;
+	}
+
+	/**
+	 * Get files containing at least one comment with the specified pattern.
+	 * 
+	 * @param pattern
+	 *            the pattern
+	 * 
+	 * @return the files containing at least one comment with the specified
+	 *         pattern
+	 */
+	public Set<String> getFilesWithPattern(String pattern) {
+		Set<String> files = new HashSet<String>();
+
+		if (pattern == null) {
+			return files;
+		}
+
+		for (TodosComment comment : comments) {
+			if (pattern.equals(comment.getPattern())) {
+				files.add(comment.getFile());
+			}
+		}
+
+		return files;
 	}
 }

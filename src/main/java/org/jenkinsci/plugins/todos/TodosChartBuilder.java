@@ -111,8 +111,8 @@ public class TodosChartBuilder implements Serializable {
 				NumberOnlyBuildLabel buildLabel = new NumberOnlyBuildLabel(
 						action.getBuild());
 
-				for (Map.Entry<String, Integer> entry : result
-						.occurrencesOfPattern().entrySet()) {
+				for (Map.Entry<String, Integer> entry : result.getReport()
+						.getPatternsToCountMapping().entrySet()) {
 					builder.add(entry.getValue(), entry.getKey(), buildLabel);
 				}
 			}

@@ -24,11 +24,12 @@
 package org.jenkinsci.plugins.todos;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.jenkinsci.plugins.todos.model.TodosReport;
 
 /**
- * TODO: Description.
+ * Display the report summary and top-level details.
  * 
  * @author Michal Turek
  */
@@ -36,124 +37,134 @@ public class TodosReportSummary implements Serializable {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
+	/**
+	 * Generate the report summary.
+	 * 
+	 * @param report
+	 *            current report
+	 * @param previous
+	 *            previous report
+	 * @return a string with the summary
+	 */
 	public static String createReportSummary(TodosReport report,
 			TodosReport previous) {
 		StringBuilder builder = new StringBuilder();
 
-		if ((report != null) && (previous != null)) {
+		// TODO: Report SLOCCount issue
+		if (report != null) {
+			builder.append("<a href=\"");
+			builder.append(TodosBuildAction.URL_NAME);
+			builder.append("\">");
+			builder.append(report.getCommentsCount());
 
-			String strComments = Messages.Todos_ReportSummary_Comments();
-			String strFiles = Messages.Todos_ReportSummary_Files();
-			String strAnd = Messages.Todos_ReportSummary_and();
-			String strLanguages = Messages.Todos_ReportSummary_Languages();
+			if (previous != null) {
+				printDifference(report.getCommentsCount(),
+						previous.getCommentsCount(), builder);
+			}
 
-			builder.append("<a href=\"" + TodosBuildAction.URL_NAME + "\">");
-			/*
-			// TODO: Uncomment and solve errors
-			builder.append(report.getLineCountString());
-			printDifference(report.getLineCount(), previous.getLineCount(),
-					builder);
+			builder.append(" ");
+			builder.append(Messages.Todos_ReportSummary_Comments());
+			builder.append("</a> ");
+			// TODO: Report SLOCCount issue
+			builder.append(Messages.Todos_ReportSummary_in());
+			builder.append(" ");
+			builder.append(report.getFiles().size());
 
-			builder.append(" " + strLines + "</a> in ");
-			builder.append(report.getFileCountString());
-			printDifference(report.getFileCount(), previous.getFileCount(),
-					builder);
+			if (previous != null) {
+				printDifference(report.getFiles().size(), previous.getFiles()
+						.size(), builder);
+			}
 
-			builder.append(" " + strFiles + " " + strAnd + " ");
-			builder.append(report.getLanguageCountString());
-			printDifference(report.getLanguageCount(),
-					previous.getLanguageCount(), builder);
-			*/
-
-			builder.append("report.getLineCountString()");
-			printDifference(0, 42, builder);
-
-			builder.append(" " + strComments + "</a> in ");
-			builder.append("report.getFileCountString()");
-			printDifference(0, 42, builder);
-
-			builder.append(" " + strFiles + " " + strAnd + " ");
-			builder.append("report.getLanguageCountString()");
-			printDifference(0, 42, builder);
-
-			builder.append(" " + strLanguages + ".");
+			builder.append(" ");
+			builder.append(Messages.Todos_ReportSummary_Files());
+			builder.append(".");
 		}
 
 		return builder.toString();
 	}
 
+	/**
+	 * Build summary details.
+	 * 
+	 * @param report
+	 *            current report
+	 * @param previous
+	 *            previous report
+	 * @return a string with the summary details
+	 */
 	public static String createReportSummaryDetails(TodosReport report,
 			TodosReport previous) {
-
 		StringBuilder builder = new StringBuilder();
 
-		if ((report != null) && (previous != null)) {
+		// TODO: Report SLOCCount issue
+		if (report != null) {
+			for (Map.Entry<String, Integer> entry : report
+					.getPatternsToCountMapping().entrySet()) {
+				builder.append("<li>");
+				builder.append("<a href=\"");
+				builder.append(TodosBuildAction.URL_NAME);
+				// TODO: constants, was /languageResult/
+				builder.append("/patternResult/");
+				// TODO: Report SLOCCount issue
+				builder.append(HtmlUtils.encodeUrl(entry.getKey()));
+				builder.append("\">");
+				builder.append(HtmlUtils.encodeText(entry.getKey(), true));
+				builder.append("</a>: ");
+				builder.append(entry.getValue());
 
-			/*
-			for (Language language : report.getLanguages()) {
+				if (previous != null) {
+					printDifference(
+							entry.getValue(),
+							previous.getCommentsWithPatternCount(entry.getKey()),
+							builder);
+				}
 
-				Language previousLanguage = null;
-				previousLanguage = previous.getLanguage(language.getName());
+				builder.append(" ");
+				builder.append(Messages.Todos_ReportSummary_Comments());
+				builder.append(" ");
+				// TODO: Report SLOCCount issue
+				builder.append(Messages.Todos_ReportSummary_in());
+				builder.append(" ");
+				builder.append(report.getFilesWithPattern(entry.getKey())
+						.size());
 
-				appendLanguageDetails(language, previousLanguage, builder);
+				if (previous != null) {
+					printDifference(
+							report.getFilesWithPattern(entry.getKey()).size(),
+							previous.getFilesWithPattern(entry.getKey()).size(),
+							builder);
+				}
+
+				builder.append(" ");
+				builder.append(Messages.Todos_ReportSummary_Files());
+				builder.append(".</li>");
 			}
-			*/
 		}
 
 		return builder.toString();
 	}
 
-	/*
-	private static void appendLanguageDetails(Language language,
-			Language previous, StringBuilder builder) {
-
-		String strLines = Messages.Todos_ReportSummary_Lines();
-		String strFiles = Messages.Todos_ReportSummary_Files();
-
-		builder.append("<li>");
-		builder.append("<a href=\"");
-		builder.append(TodosBuildAction.URL_NAME);
-		builder.append("/languageResult/");
-		builder.append(language.getName());
-		builder.append("\">");
-		builder.append(language.getName());
-		builder.append("</a> : ");
-		builder.append(language.getLineCountString());
-		if (previous != null) {
-			printDifference(language.getLineCount(), previous.getLineCount(),
-					builder);
-		}
-		// TODO: localization
-		builder.append(" " + strLines + " in ");
-		builder.append(language.getFileCountString());
-		if (previous != null) {
-			printDifference(language.getFileCount(), previous.getFileCount(),
-					builder);
-		}
-		builder.append(" " + strFiles + ".</li>");
-	}
-	*/
-
+	/**
+	 * Print the formatted difference of two integers.
+	 * 
+	 * @param current
+	 *            current value
+	 * @param previous
+	 *            previous value
+	 * @param builder
+	 *            string builder for output
+	 */
 	private static void printDifference(int current, int previous,
 			StringBuilder builder) {
 		int difference = current - previous;
 
-		if (difference > 0) {
-			builder.append(" (+");
-			builder.append(grouping(difference));
-			builder.append(")");
-		} else if (difference == 0) {
-			// do nothing
-		} else {
-			builder.append(" ("); // minus sign is part of the difference
-									// variable (negative number)
-			builder.append(grouping(difference));
-			builder.append(")");
+		if (difference == 0) {
+			return;
 		}
-	}
 
-	public static String grouping(int value) {
-		// TODO: Is it correct?
-		return String.format("%,d", value);
+		// Minus sign is part of the difference variable (negative number)
+		builder.append((difference > 0) ? " (+" : " (");
+		builder.append(difference);
+		builder.append(")");
 	}
 }
