@@ -50,7 +50,6 @@ public class TodosReportSummary implements Serializable {
 			TodosReport previous) {
 		StringBuilder builder = new StringBuilder();
 
-		// TODO: Report SLOCCount issue
 		if (report != null) {
 			builder.append("<a href=\"");
 			builder.append(TodosBuildAction.URL_NAME);
@@ -65,7 +64,6 @@ public class TodosReportSummary implements Serializable {
 			builder.append(" ");
 			builder.append(Messages.Todos_ReportSummary_Comments());
 			builder.append("</a> ");
-			// TODO: Report SLOCCount issue
 			builder.append(Messages.Todos_ReportSummary_in());
 			builder.append(" ");
 			builder.append(report.getFiles().size());
@@ -96,7 +94,6 @@ public class TodosReportSummary implements Serializable {
 			TodosReport previous) {
 		StringBuilder builder = new StringBuilder();
 
-		// TODO: Report SLOCCount issue
 		if (report != null) {
 			for (Map.Entry<String, Integer> entry : report
 					.getPatternsToCountMapping().entrySet()) {
@@ -105,7 +102,6 @@ public class TodosReportSummary implements Serializable {
 				builder.append(TodosBuildAction.URL_NAME);
 				// TODO: constants, was /languageResult/
 				builder.append("/patternResult/");
-				// TODO: Report SLOCCount issue
 				builder.append(HtmlUtils.encodeUrl(entry.getKey()));
 				builder.append("\">");
 				builder.append(HtmlUtils.encodeText(entry.getKey(), true));
@@ -122,7 +118,6 @@ public class TodosReportSummary implements Serializable {
 				builder.append(" ");
 				builder.append(Messages.Todos_ReportSummary_Comments());
 				builder.append(" ");
-				// TODO: Report SLOCCount issue
 				builder.append(Messages.Todos_ReportSummary_in());
 				builder.append(" ");
 				builder.append(report.getFilesWithPattern(entry.getKey())
