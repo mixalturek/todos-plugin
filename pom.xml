@@ -36,12 +36,14 @@ THE SOFTWARE.
   <artifactId>todos</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
-
   <name>TODOs Plugin</name>
   <description>This plugin generates the trend report for TODOs, an open source utility that searches TODO, FIXME and similar comments in project files.</description>
+  <url>http://wiki.jenkins-ci.org/display/JENKINS/TODOs+Plugin</url>
+
   <licenses>
     <license>
       <name>The MIT License (MIT)</name>
+      <comments>All source code is under the MIT license.</comments>
       <url>http://www.opensource.org/licenses/mit-license.php</url>
     </license>
   </licenses>
@@ -50,13 +52,14 @@ THE SOFTWARE.
     <developer>
       <id>mixalturek</id>
       <name>Michal Turek</name>
+      <email>mixalturek@users.sf.net</email>
     </developer>
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/mixalturek/${project.artifactId}-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:mixalturek/${project.artifactId}-plugin.git</developerConnection>
-    <url>https://github.com/mixalturek/${project.artifactId}-plugin</url>
+    <connection>scm:git:ssh://github.com/jenkinsci/todos-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/todos-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/todos-plugin</url>
   </scm>
 
   <properties>
