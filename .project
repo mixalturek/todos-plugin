@@ -1,6 +1,6 @@
 <projectDescription>
   <name>TODOs</name>
-  <comment>NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <comment>This plugin generates the trend report for TODOs, an open source utility that searches TODO, FIXME and similar comments in project files. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>

@@ -26,13 +26,12 @@
 package org.jenkinsci.plugins.todos;
 
 import hudson.Extension;
-import hudson.maven.AbstractMavenProject;
 import hudson.model.AbstractProject;
-import hudson.model.FreeStyleProject;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Publisher;
 
 /**
+ * Plugin descriptor.
  * 
  * @author Michal Turek
  */
@@ -42,11 +41,10 @@ public class TodosDescriptor extends BuildStepDescriptor<Publisher> {
 		super(TodosPublisher.class);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-		return AbstractMavenProject.class.isAssignableFrom(jobType)
-				|| FreeStyleProject.class.isAssignableFrom(jobType)
-				|| jobType.getSimpleName().equals("JobGenerator");
+		return true;
 	}
 
 	@Override

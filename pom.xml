@@ -69,11 +69,6 @@ THE SOFTWARE.
   </properties>
   
   <dependencies>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>maven-plugin</artifactId>
-    </dependency>
-    
     <!-- To fix failing tests during mvn package. -->
     <!-- FIXME: This adds jna.jar to todos.hpi, which is incorrect. -->
     <!--
