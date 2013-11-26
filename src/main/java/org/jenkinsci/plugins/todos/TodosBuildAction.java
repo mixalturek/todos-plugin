@@ -29,7 +29,7 @@ import hudson.model.AbstractBuild;
 
 import java.io.Serializable;
 
-import org.jenkinsci.plugins.todos.model.TodosReport;
+import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 import org.kohsuke.stapler.StaplerProxy;
 
 /**
@@ -68,8 +68,8 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 		String retVal = "";
 
 		if (result != null) {
-			retVal = TodosReportSummary.createReportSummary(result.getReport(),
-					getPreviousReport());
+			retVal = TodosReportSummary.createReportSummary(
+					result.getStatistics(), getPreviousStatistics());
 		}
 
 		return retVal;
@@ -80,7 +80,7 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 
 		if (result != null) {
 			retVal = TodosReportSummary.createReportSummaryDetails(
-					result.getReport(), getPreviousReport());
+					result.getStatistics(), getPreviousStatistics());
 		}
 
 		return retVal;
@@ -90,12 +90,12 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 		return result;
 	}
 
-	private TodosReport getPreviousReport() {
+	private TodosReportStatistics getPreviousStatistics() {
 		TodosResult previous = getPreviousResult();
 		if (previous == null) {
 			return null;
 		} else {
-			return previous.getReport();
+			return previous.getStatistics();
 		}
 	}
 
@@ -111,7 +111,6 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	}
 
 	TodosBuildAction getPreviousAction() {
-
 		if (build != null) {
 			AbstractBuild<?, ?> previousBuild = build.getPreviousBuild();
 

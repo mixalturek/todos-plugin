@@ -31,15 +31,18 @@ import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.remoting.VirtualChannel;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Recorder;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 
 import org.jenkinsci.plugins.todos.model.TodosParser;
-import org.jenkinsci.plugins.todos.model.TodosReport;
+import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -78,15 +81,15 @@ public class TodosPublisher extends Recorder implements Serializable {
 		FilePath workspace = build.getWorkspace();
 		PrintStream logger = listener.getLogger();
 		TodosParser parser = new TodosParser(getRealPattern(), logger);
-		TodosReport report = null;
+		TodosReportStatistics statistics = null;
 
 		try {
 			if (this.canContinue(build.getResult())) {
-				report = workspace.act(parser);
+				statistics = workspace.act(parser);
 			} else {
 				// generate an empty report
 				// TODO: Replace this empty report with the last valid one?
-				report = new TodosReport();
+				statistics = new TodosReportStatistics();
 			}
 		} catch (IOException e) {
 			e.printStackTrace(logger);
@@ -96,10 +99,39 @@ public class TodosPublisher extends Recorder implements Serializable {
 			return false;
 		}
 
-		TodosResult result = new TodosResult(report, build);
+		TodosResult result = new TodosResult(statistics, build);
 		build.addAction(new TodosBuildAction(build, result));
 
+		/*
+		try {
+			copyFileToBuildDirectory(new File("todos.xml"), build.getRootDir(),
+					launcher.getChannel());
+		} catch (IOException e) {
+			e.printStackTrace(logger);
+		} catch (InterruptedException e) {
+			e.printStackTrace(logger);
+		}
+		*/
+
 		return true;
+	}
+
+	private void copyFileToBuildDirectory(File sourceFile, File rootDir,
+			VirtualChannel channel) throws IOException, InterruptedException {
+		File destDir = new File(rootDir, "todos"); // TODO: constant
+
+		if (!destDir.exists() && !destDir.mkdir()) {
+			throw new IOException(
+					"Create directory for copy of workspace files failed: "
+							+ destDir.getAbsolutePath());
+		}
+
+		File masterFile = new File(destDir, sourceFile.getName());
+		if (!masterFile.exists()) {
+			FileOutputStream outputStream = new FileOutputStream(masterFile);
+			new FilePath(channel, sourceFile.getAbsolutePath())
+					.copyTo(outputStream);
+		}
 	}
 
 	public BuildStepMonitor getRequiredMonitorService() {

@@ -25,9 +25,9 @@
 package org.jenkinsci.plugins.todos;
 
 import java.io.Serializable;
-import java.util.Map;
 
-import org.jenkinsci.plugins.todos.model.TodosReport;
+import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
+import org.jenkinsci.plugins.todos.model.TodosReportStatistics.PatternStatistics;
 
 /**
  * Display the report summary and top-level details.
@@ -41,25 +41,25 @@ public class TodosReportSummary implements Serializable {
 	/**
 	 * Generate the report summary.
 	 * 
-	 * @param report
-	 *            current report
+	 * @param current
+	 *            current report statistics
 	 * @param previous
-	 *            previous report
+	 *            previous report statistics
 	 * @return a string with the summary
 	 */
-	public static String createReportSummary(TodosReport report,
-			TodosReport previous) {
+	public static String createReportSummary(TodosReportStatistics current,
+			TodosReportStatistics previous) {
 		StringBuilder builder = new StringBuilder();
 
-		if (report != null) {
+		if (current != null) {
 			builder.append("<a href=\"");
 			builder.append(TodosBuildAction.URL_NAME);
 			builder.append("\">");
-			builder.append(report.getCommentsCount());
+			builder.append(current.getTotalComments());
 
 			if (previous != null) {
-				printDifference(report.getCommentsCount(),
-						previous.getCommentsCount(), builder);
+				printDifference(current.getTotalComments(),
+						previous.getTotalComments(), builder);
 			}
 
 			builder.append(" ");
@@ -67,11 +67,11 @@ public class TodosReportSummary implements Serializable {
 			builder.append("</a> ");
 			builder.append(Messages.Todos_ReportSummary_in());
 			builder.append(" ");
-			builder.append(report.getFiles().size());
+			builder.append(current.getTotalFiles());
 
 			if (previous != null) {
-				printDifference(report.getFiles().size(), previous.getFiles()
-						.size(), builder);
+				printDifference(current.getTotalFiles(),
+						previous.getTotalFiles(), builder);
 			}
 
 			builder.append(" ");
@@ -85,35 +85,34 @@ public class TodosReportSummary implements Serializable {
 	/**
 	 * Build summary details.
 	 * 
-	 * @param report
-	 *            current report
+	 * @param current
+	 *            current report statistics
 	 * @param previous
-	 *            previous report
+	 *            previous report statistics
 	 * @return a string with the summary details
 	 */
-	public static String createReportSummaryDetails(TodosReport report,
-			TodosReport previous) {
+	public static String createReportSummaryDetails(
+			TodosReportStatistics current, TodosReportStatistics previous) {
 		StringBuilder builder = new StringBuilder();
 
-		if (report != null) {
-			for (Map.Entry<String, Integer> entry : report
-					.getPatternsToCountMapping().entrySet()) {
+		if (current != null) {
+			for (PatternStatistics statistics : current.getPatternStatistics()) {
 				builder.append("<li>");
 				builder.append("<a href=\"");
 				builder.append(TodosBuildAction.URL_NAME);
 				// TODO: constants, was /languageResult/
 				builder.append("/patternResult/");
-				builder.append(HtmlUtils.encodeUrl(entry.getKey()));
+				builder.append(HtmlUtils.encodeUrl(statistics.getPatternName()));
 				builder.append("\">");
-				builder.append(HtmlUtils.encodeText(entry.getKey(), true));
+				builder.append(HtmlUtils.encodeText(
+						statistics.getPatternName(), true));
 				builder.append("</a>: ");
-				builder.append(entry.getValue());
+				builder.append(statistics.getNumOccurrences());
 
 				if (previous != null) {
-					printDifference(
-							entry.getValue(),
-							previous.getCommentsWithPatternCount(entry.getKey()),
-							builder);
+					printDifference(statistics.getNumOccurrences(), previous
+							.getPatternStatistics(statistics.getPatternName())
+							.getNumOccurrences(), builder);
 				}
 
 				builder.append(" ");
@@ -121,13 +120,15 @@ public class TodosReportSummary implements Serializable {
 				builder.append(" ");
 				builder.append(Messages.Todos_ReportSummary_in());
 				builder.append(" ");
-				builder.append(report.getFilesWithPattern(entry.getKey())
-						.size());
+				builder.append(current.getPatternStatistics(
+						statistics.getPatternName()).getNumFiles());
 
 				if (previous != null) {
 					printDifference(
-							report.getFilesWithPattern(entry.getKey()).size(),
-							previous.getFilesWithPattern(entry.getKey()).size(),
+							current.getPatternStatistics(
+									statistics.getPatternName()).getNumFiles(),
+							previous.getPatternStatistics(
+									statistics.getPatternName()).getNumFiles(),
 							builder);
 				}
 

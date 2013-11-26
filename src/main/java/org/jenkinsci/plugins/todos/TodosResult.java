@@ -28,7 +28,7 @@ import hudson.model.AbstractBuild;
 
 import java.io.Serializable;
 
-import org.jenkinsci.plugins.todos.model.TodosReport;
+import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 
 /**
  * TODO: Description.
@@ -39,16 +39,17 @@ public class TodosResult implements Serializable {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
-	private final TodosReport report;
+	private final TodosReportStatistics statistics;
 	private final AbstractBuild<?, ?> owner;
 
-	public TodosResult(TodosReport report, AbstractBuild<?, ?> owner) {
-		this.report = report;
+	public TodosResult(TodosReportStatistics statistics,
+			AbstractBuild<?, ?> owner) {
+		this.statistics = statistics;
 		this.owner = owner;
 	}
 
-	public TodosReport getReport() {
-		return report;
+	public TodosReportStatistics getStatistics() {
+		return statistics;
 	}
 
 	public AbstractBuild<?, ?> getOwner() {

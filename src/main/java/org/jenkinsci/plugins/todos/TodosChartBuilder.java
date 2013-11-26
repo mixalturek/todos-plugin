@@ -30,8 +30,8 @@ import hudson.util.ShiftedCategoryAxis;
 
 import java.awt.Color;
 import java.io.Serializable;
-import java.util.Map;
 
+import org.jenkinsci.plugins.todos.model.TodosReportStatistics.PatternStatistics;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -112,9 +112,10 @@ public class TodosChartBuilder implements Serializable {
 				NumberOnlyBuildLabel buildLabel = new NumberOnlyBuildLabel(
 						action.getBuild());
 
-				for (Map.Entry<String, Integer> entry : result.getReport()
-						.getPatternsToCountMapping().entrySet()) {
-					builder.add(entry.getValue(), entry.getKey(), buildLabel);
+				for (PatternStatistics statistics : result.getStatistics()
+						.getPatternStatistics()) {
+					builder.add(statistics.getNumOccurrences(),
+							statistics.getPatternName(), buildLabel);
 				}
 			}
 

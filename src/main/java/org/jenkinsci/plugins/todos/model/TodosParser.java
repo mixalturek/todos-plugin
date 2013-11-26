@@ -30,6 +30,8 @@ import hudson.remoting.VirtualChannel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -48,7 +50,8 @@ import org.xml.sax.SAXException;
  * 
  * @author Michal Turek
  */
-public class TodosParser implements FilePath.FileCallable<TodosReport> {
+public class TodosParser implements
+		FilePath.FileCallable<TodosReportStatistics> {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
@@ -77,7 +80,7 @@ public class TodosParser implements FilePath.FileCallable<TodosReport> {
 	 * @see hudson.FilePath.FileCallable#invoke(java.io.File,
 	 *      hudson.remoting.VirtualChannel)
 	 */
-	public TodosReport invoke(File workspace, VirtualChannel channel)
+	public TodosReportStatistics invoke(File workspace, VirtualChannel channel)
 			throws IOException {
 		String[] files = findFiles(workspace, filePattern);
 		TodosReport report = new TodosReport();
@@ -88,9 +91,13 @@ public class TodosParser implements FilePath.FileCallable<TodosReport> {
 					TodosConstants.JENKINS_TODOS_PLUGIN);
 		}
 
+		Set<String> paths = new HashSet<String>();
+
 		for (String filename : files) {
 			try {
-				report = report.concatenate(parse(workspace, filename));
+				File inputFile = new File(workspace, filename);
+				report = report.concatenate(parse(inputFile));
+				paths.add(inputFile.getAbsolutePath());
 			} catch (SAXException e) {
 				throw new IOException("File parsing failed: " + filename + ", "
 						+ findExceptionMessage(e) + " "
@@ -105,26 +112,21 @@ public class TodosParser implements FilePath.FileCallable<TodosReport> {
 		// TODO: Simplify names if needed.
 		// report.simplifyNames();
 
-		return report;
+		return new TodosReportStatistics(report, paths);
 	}
 
 	/**
 	 * Helper method to parse one input file.
 	 * 
-	 * @param workspace
-	 *            the workspace root
-	 * @param filename
-	 *            the file path relative to the workspace
+	 * @param file
+	 *            the file to be parsed
 	 * @return the content of parsed file in form of a report
 	 * @throws SAXException
 	 *             if a XML related error occur
 	 * @throws JAXBException
 	 *             if a XML related error occur
 	 */
-	private TodosReport parse(File workspace, String filename)
-			throws SAXException, JAXBException {
-		File file = new File(workspace, filename);
-
+	private TodosReport parse(File file) throws SAXException, JAXBException {
 		if (!file.exists()) {
 			logger.format("%s File does not exist: %s %s\n",
 					TodosConstants.WARNING, file.getAbsolutePath(),
