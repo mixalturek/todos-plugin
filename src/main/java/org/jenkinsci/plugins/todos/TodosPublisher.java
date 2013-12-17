@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.List;
 
 import org.jenkinsci.plugins.todos.model.TodosParser;
 import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
@@ -102,23 +103,41 @@ public class TodosPublisher extends Recorder implements Serializable {
 		TodosResult result = new TodosResult(statistics, build);
 		build.addAction(new TodosBuildAction(build, result));
 
-		/*
 		try {
-			copyFileToBuildDirectory(new File("todos.xml"), build.getRootDir(),
-					launcher.getChannel());
+			copyFilesToBuildDirectory(statistics.getSourceFiles(),
+					build.getRootDir(), launcher.getChannel());
 		} catch (IOException e) {
 			e.printStackTrace(logger);
 		} catch (InterruptedException e) {
 			e.printStackTrace(logger);
 		}
-		*/
 
 		return true;
 	}
 
-	private void copyFileToBuildDirectory(File sourceFile, File rootDir,
-			VirtualChannel channel) throws IOException, InterruptedException {
-		File destDir = new File(rootDir, "todos"); // TODO: constant
+	/**
+	 * Copy files to a build results directory. The copy of a file will be
+	 * stored in TodosConstants.BUILD_SUBDIR subdirectory and a hashcode of its
+	 * absolute path will be used in its name to distinguish files with the same
+	 * names from different directories.
+	 * 
+	 * @param sourceFiles
+	 *            the files to copy
+	 * @param rootDir
+	 *            the root directory where build results are stored.
+	 * @param channel
+	 *            the communication channel
+	 * @throws IOException
+	 *             if something fails
+	 * @throws InterruptedException
+	 *             if something fails
+	 * 
+	 * @see TodosConstants#BUILD_SUBDIR
+	 */
+	private void copyFilesToBuildDirectory(List<File> sourceFiles,
+			File rootDir, VirtualChannel channel) throws IOException,
+			InterruptedException {
+		File destDir = new File(rootDir, TodosConstants.BUILD_SUBDIR);
 
 		if (!destDir.exists() && !destDir.mkdir()) {
 			throw new IOException(
@@ -126,11 +145,15 @@ public class TodosPublisher extends Recorder implements Serializable {
 							+ destDir.getAbsolutePath());
 		}
 
-		File masterFile = new File(destDir, sourceFile.getName());
-		if (!masterFile.exists()) {
-			FileOutputStream outputStream = new FileOutputStream(masterFile);
-			new FilePath(channel, sourceFile.getAbsolutePath())
-					.copyTo(outputStream);
+		for (File sourceFile : sourceFiles) {
+			File masterFile = new File(destDir, String.valueOf(sourceFile
+					.hashCode()) + "_" + sourceFile.getName());
+
+			if (!masterFile.exists()) {
+				FileOutputStream outputStream = new FileOutputStream(masterFile);
+				new FilePath(channel, sourceFile.getAbsolutePath())
+						.copyTo(outputStream);
+			}
 		}
 	}
 

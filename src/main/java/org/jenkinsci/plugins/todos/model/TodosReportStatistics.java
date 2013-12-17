@@ -24,11 +24,14 @@
  */
 package org.jenkinsci.plugins.todos.model;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +45,7 @@ public class TodosReportStatistics implements Serializable {
 	private static final long serialVersionUID = 0L;
 
 	/** Paths of source files that were used for parsing. */
-	private final transient Set<String> sourceFiles;
+	private final transient List<File> sourceFiles;
 
 	/** Total number of comments that were found. */
 	private int totalComments;
@@ -57,7 +60,7 @@ public class TodosReportStatistics implements Serializable {
 	 * Helper constructor for empty instance.
 	 */
 	public TodosReportStatistics() {
-		this(new TodosReport(), new HashSet<String>());
+		this(new TodosReport(), new ArrayList<File>());
 	}
 
 	/**
@@ -68,8 +71,8 @@ public class TodosReportStatistics implements Serializable {
 	 * @param sourceFiles
 	 *            the files from which the report was created
 	 */
-	public TodosReportStatistics(TodosReport report, Set<String> sourceFiles) {
-		this.sourceFiles = Collections.unmodifiableSet(sourceFiles);
+	public TodosReportStatistics(TodosReport report, List<File> sourceFiles) {
+		this.sourceFiles = Collections.unmodifiableList(sourceFiles);
 
 		Set<String> filesWithComments = new HashSet<String>();
 
@@ -104,7 +107,7 @@ public class TodosReportStatistics implements Serializable {
 		}
 	}
 
-	public Set<String> getSourceFiles() {
+	public List<File> getSourceFiles() {
 		// It is already an unmodifiable list
 		return sourceFiles;
 	}

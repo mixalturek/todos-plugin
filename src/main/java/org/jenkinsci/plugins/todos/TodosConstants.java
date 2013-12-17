@@ -35,4 +35,7 @@ public class TodosConstants {
 
 	/** String specifying this is a warning message. */
 	public static final String WARNING = "WARNING:";
+
+	/** Subdirectory of build results directory where source files are stored. */
+	public static final String BUILD_SUBDIR = "todos-plugin";
 }

@@ -30,6 +30,7 @@ import hudson.remoting.VirtualChannel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -91,13 +92,13 @@ public class TodosParser implements
 					TodosConstants.JENKINS_TODOS_PLUGIN);
 		}
 
-		Set<String> paths = new HashSet<String>();
+		Set<File> paths = new HashSet<File>();
 
 		for (String filename : files) {
 			try {
 				File inputFile = new File(workspace, filename);
 				report = report.concatenate(parse(inputFile));
-				paths.add(inputFile.getAbsolutePath());
+				paths.add(inputFile);
 			} catch (SAXException e) {
 				throw new IOException("File parsing failed: " + filename + ", "
 						+ findExceptionMessage(e) + " "
@@ -112,7 +113,7 @@ public class TodosParser implements
 		// TODO: Simplify names if needed.
 		// report.simplifyNames();
 
-		return new TodosReportStatistics(report, paths);
+		return new TodosReportStatistics(report, new ArrayList<File>(paths));
 	}
 
 	/**
