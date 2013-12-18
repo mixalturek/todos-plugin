@@ -7,7 +7,28 @@
 
 			<h1>${%TODOs Results}</h1>
 
-			<st:include page="/tabview/main.jelly" />
+			<st:header name="Content-Type" value="text/html;charset=UTF-8" />
+			<script type="text/javascript" src="${rootURL}/plugin/todos/yui/utilities.js"></script>
+			<script type="text/javascript" src="${rootURL}/plugin/todos/yui/tabview-min.js"></script>
+			<script type="text/javascript" src="${rootURL}/plugin/todos/yui/dispatcher-min.js"></script>
+
+			<script type="text/javascript">
+			  var myTabs = new YAHOO.widget.TabView("statistics");
+		
+				YAHOO.plugin.Dispatcher.delegate (new YAHOO.widget.Tab({
+					label: '${%Comments}',
+					dataSrc: 'files',
+					cacheData: true,
+					active: false
+				}), myTabs);
+		
+			  myTabs.set('activeIndex', 0);
+			</script>
+		
+			<st:include page="css.jelly" />
+		
+			<div id="statistics" class="yui-navset">
+			</div>
 
 		</l:main-panel>
 	</l:layout>
