@@ -27,7 +27,11 @@ package org.jenkinsci.plugins.todos;
 import hudson.model.AbstractBuild;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.jenkinsci.plugins.todos.model.TodosComment;
+import org.jenkinsci.plugins.todos.model.TodosReport;
 import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 
 /**
@@ -56,63 +60,22 @@ public class TodosResult implements Serializable {
 		return owner;
 	}
 
-	/*
-	public TodosResult getLanguageResult(String language) {
-		TodosReport filtered = new TodosReport(report, new LanguageFileFilter(
-				language));
-		return new BreadCrumbResult(filtered, owner, language);
+	public TodosReport getReport() {
+		// TODO: Return real data
+		List<TodosComment> comments = new LinkedList<TodosComment>();
+		comments.add(new TodosComment("PATTERN", "FILE", -1, "TEXT"));
+		comments.add(new TodosComment("TODO", "a.java", 42, "// TODO: aa"));
+		comments.add(new TodosComment("TODO", "a.java", 4, "// TODO: aa"));
+		comments.add(new TodosComment("TODO", "a.java", 6, "// TODO: aa"));
+		comments.add(new TodosComment("FIXME", "b.java", 5, "// FIXME bb"));
+		comments.add(new TodosComment("NOTE", "c.java", 5, "// NOTE bb"));
+		comments.add(new TodosComment("OPEN", "d.java", 5, "// OPEN bb"));
+		comments.add(new TodosComment("FIXME", "bb.java", 5, "// FIXME bb"));
+		comments.add(new TodosComment("FIXME", "bb.java", 55, "// FIXME bb"));
+		comments.add(new TodosComment("FIXME", "bb.java", 56, "// FIXME bb"));
+		comments.add(new TodosComment("FIXME", "bb.java", 54, "// FIXME bb"));
+		comments.add(new TodosComment("FIXME", "bb.java", 555, "// FIXME bb"));
+
+		return new TodosReport(comments);
 	}
-
-	public TodosResult getFolderResult(String jumbledFolder) {
-		String folder = jumbledFolder.replace("|",
-				System.getProperty("file.separator"));
-		TodosReport filtered = new TodosReport(report, new FolderFileFilter(
-				folder));
-		return new BreadCrumbResult(filtered, owner, folder);
-	}
-
-	private static class LanguageFileFilter implements FileFilter, Serializable {
-		private final String language;
-
-		public LanguageFileFilter(String language) {
-			this.language = language;
-		}
-
-		public boolean include(File file) {
-			return file.getLanguage().equals(language);
-		}
-	}
-
-	private static class FolderFileFilter implements FileFilter, Serializable {
-		private final String folder;
-
-		public FolderFileFilter(String folder) {
-			this.folder = folder;
-		}
-
-		public boolean include(File file) {
-			String separator = System.getProperty("file.separator");
-
-			int index = file.getName().lastIndexOf(separator);
-			String fileFolder = file.getName().substring(0, index);
-
-			return folder.equals(fileFolder);
-		}
-	}
-
-	private static class BreadCrumbResult extends TodosResult implements
-			ModelObject, Serializable {
-		private String displayName = null;
-
-		public BreadCrumbResult(TodosReport report, AbstractBuild<?, ?> owner,
-				String displayName) {
-			super(report, owner);
-			this.displayName = displayName;
-		}
-
-		public String getDisplayName() {
-			return displayName;
-		}
-	}
-	*/
 }

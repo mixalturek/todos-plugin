@@ -7,7 +7,7 @@
 
 			<h1>${%TODOs Results}</h1>
 
-	        <st:include page="/tabview/main.jelly" />
+			<st:include page="/tabview/main.jelly" />
 
 		</l:main-panel>
 	</l:layout>

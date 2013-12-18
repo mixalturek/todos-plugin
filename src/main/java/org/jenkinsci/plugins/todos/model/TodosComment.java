@@ -29,6 +29,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
+import org.jenkinsci.plugins.todos.HtmlUtils;
+
 /**
  * Single comment that was found.
  * 
@@ -85,8 +87,16 @@ public class TodosComment implements Serializable {
 		return pattern;
 	}
 
+	public String getPatternHtml() {
+		return HtmlUtils.encodeText(pattern, true);
+	}
+
 	public String getFile() {
 		return file;
+	}
+
+	public String getFileHtml() {
+		return HtmlUtils.encodeText(file, true);
 	}
 
 	public int getLine() {
@@ -95,5 +105,9 @@ public class TodosComment implements Serializable {
 
 	public String getText() {
 		return text;
+	}
+
+	public String getTextHtml() {
+		return HtmlUtils.encodeText(text, true);
 	}
 }
