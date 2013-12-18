@@ -7,28 +7,31 @@
 
 			<h1>${%TODOs Results}</h1>
 
-			<st:header name="Content-Type" value="text/html;charset=UTF-8" />
-			<script type="text/javascript" src="${rootURL}/plugin/todos/yui/utilities.js"></script>
-			<script type="text/javascript" src="${rootURL}/plugin/todos/yui/tabview-min.js"></script>
-			<script type="text/javascript" src="${rootURL}/plugin/todos/yui/dispatcher-min.js"></script>
-
-			<script type="text/javascript">
-			  var myTabs = new YAHOO.widget.TabView("statistics");
-		
-				YAHOO.plugin.Dispatcher.delegate (new YAHOO.widget.Tab({
-					label: '${%Comments}',
-					dataSrc: 'files',
-					cacheData: true,
-					active: false
-				}), myTabs);
-		
-			  myTabs.set('activeIndex', 0);
-			</script>
-		
-			<st:include page="css.jelly" />
-		
-			<div id="statistics" class="yui-navset">
-			</div>
+			<table class="pane sortable">
+				<thead>
+					<tr>
+						<td class="pane-header">${%File}</td>
+						<td class="pane-header" style="width: 4em;">${%Line}</td>
+						<td class="pane-header" style="width: 7em;">${%Pattern}</td>
+						<td class="pane-header" style="width: 70%;">${%Comment}</td>
+					</tr>
+				</thead>
+				<tbody>
+					<j:forEach var="comment" items="${it.report.comments}">
+					<tr>
+						<td class="pane">${comment.fileHtml}</td>
+						<td class="pane" style="text-align: right;">${comment.line}</td>
+						<td class="pane">${comment.patternHtml}</td>
+						<td class="pane"><pre>${comment.textHtml}</pre></td>
+					</tr>
+					</j:forEach>
+				</tbody>
+				<tfoot>
+					<tr class="sortbottom">
+						<td class="pane-header" colspan="4">${%Total} ${it.report.commentsCount} ${%comments}</td>
+					</tr>
+				</tfoot>
+			</table>
 
 		</l:main-panel>
 	</l:layout>
