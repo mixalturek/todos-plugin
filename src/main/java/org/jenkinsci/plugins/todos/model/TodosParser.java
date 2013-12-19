@@ -97,7 +97,7 @@ public class TodosParser implements
 		for (String filename : files) {
 			try {
 				File inputFile = new File(workspace, filename);
-				report = report.concatenate(parse(inputFile));
+				report = report.concatenate(parse(inputFile, logger));
 				paths.add(inputFile);
 			} catch (SAXException e) {
 				throw new IOException("File parsing failed: " + filename + ", "
@@ -117,37 +117,72 @@ public class TodosParser implements
 	}
 
 	/**
+	 * Parse a list of input files. All errors are silently ignored.
+	 * 
+	 * @param files
+	 *            the files
+	 * @return the content of the parsed files in form of a report
+	 */
+	public static TodosReport parseFiles(File[] files) {
+		TodosReport report = new TodosReport();
+
+		for (File file : files) {
+			try {
+				report = report.concatenate(parse(file, null));
+			} catch (SAXException e) {
+				// Silently ignore, it's still a possibility that other files
+				// can be parsed successfully
+			} catch (JAXBException e) {
+				// Silently ignore, it's still a possibility that other files
+				// can be parsed successfully
+			}
+		}
+
+		return report;
+	}
+
+	/**
 	 * Helper method to parse one input file.
 	 * 
 	 * @param file
 	 *            the file to be parsed
-	 * @return the content of parsed file in form of a report
+	 * @param logger
+	 *            optional logger to report errors, can be null
+	 * @return the content of the parsed file in form of a report
 	 * @throws SAXException
 	 *             if a XML related error occur
 	 * @throws JAXBException
 	 *             if a XML related error occur
 	 */
-	private TodosReport parse(File file) throws SAXException, JAXBException {
+	private static TodosReport parse(File file, PrintStream logger)
+			throws SAXException, JAXBException {
 		if (!file.exists()) {
-			logger.format("%s File does not exist: %s %s\n",
-					TodosConstants.WARNING, file.getAbsolutePath(),
-					TodosConstants.JENKINS_TODOS_PLUGIN);
+			if (logger != null) {
+				logger.format("%s File does not exist: %s %s\n",
+						TodosConstants.WARNING, file.getAbsolutePath(),
+						TodosConstants.JENKINS_TODOS_PLUGIN);
+			}
 			return new TodosReport();
 		} else if (!file.isFile() || !file.canRead()) {
-			logger.format(
-					"%s File is not readable, check permissions: %s %s\n",
-					TodosConstants.WARNING, file.getAbsolutePath(),
-					TodosConstants.JENKINS_TODOS_PLUGIN);
+			if (logger != null) {
+				logger.format(
+						"%s File is not readable, check permissions: %s %s\n",
+						TodosConstants.WARNING, file.getAbsolutePath(),
+						TodosConstants.JENKINS_TODOS_PLUGIN);
+			}
 			return new TodosReport();
 		}
 
-		logger.format("Processing file: %s %s\n", file.getAbsolutePath(),
-				TodosConstants.JENKINS_TODOS_PLUGIN);
+		if (logger != null) {
+			logger.format("Processing file: %s %s\n", file.getAbsolutePath(),
+					TodosConstants.JENKINS_TODOS_PLUGIN);
+		}
 
 		String W3C_XML_SCHEMA_NS_URI = "http://www.w3.org/2001/XMLSchema";
 		SchemaFactory sf = SchemaFactory
 				.newInstance(/* XMLConstants. */W3C_XML_SCHEMA_NS_URI);
-		Schema schema = sf.newSchema(this.getClass().getResource("todos.xsd"));
+		Schema schema = sf
+				.newSchema(TodosParser.class.getResource("todos.xsd"));
 
 		JAXBContext context = JAXBContext.newInstance(TodosReport.class);
 

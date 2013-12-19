@@ -8,6 +8,8 @@
 			<h1>${%TODOs Results}</h1>
 
 			<table class="pane sortable">
+				<j:set var="cachedReport" value="${it.report}"/>
+
 				<thead>
 					<tr>
 						<td class="pane-header">${%File}</td>
@@ -17,7 +19,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<j:forEach var="comment" items="${it.report.comments}">
+					<j:forEach var="comment" items="${cachedReport.comments}">
 					<tr>
 						<td class="pane">${comment.fileHtml}</td>
 						<td class="pane" style="text-align: right;">${comment.line}</td>
@@ -28,7 +30,7 @@
 				</tbody>
 				<tfoot>
 					<tr class="sortbottom">
-						<td class="pane-header" colspan="4">${%Total} ${it.report.commentsCount} ${%comments}</td>
+						<td class="pane-header" colspan="4">${%Total} ${cachedReport.commentsCount} ${%comments}</td>
 					</tr>
 				</tfoot>
 			</table>

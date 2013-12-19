@@ -26,11 +26,10 @@ package org.jenkinsci.plugins.todos;
 
 import hudson.model.AbstractBuild;
 
+import java.io.File;
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.jenkinsci.plugins.todos.model.TodosComment;
+import org.jenkinsci.plugins.todos.model.TodosParser;
 import org.jenkinsci.plugins.todos.model.TodosReport;
 import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 
@@ -61,21 +60,12 @@ public class TodosResult implements Serializable {
 	}
 
 	public TodosReport getReport() {
-		// TODO: Return real data
-		List<TodosComment> comments = new LinkedList<TodosComment>();
-		comments.add(new TodosComment("PATTERN", "FILE", -1, "TEXT"));
-		comments.add(new TodosComment("TODO", "a.java", 42, "// TODO: aa"));
-		comments.add(new TodosComment("TODO", "a.java", 4, "// TODO: aa"));
-		comments.add(new TodosComment("TODO", "a.java", 6, "// TODO: aa"));
-		comments.add(new TodosComment("FIXME", "b.java", 5, "// FIXME bb"));
-		comments.add(new TodosComment("NOTE", "c.java", 5, "// NOTE bb"));
-		comments.add(new TodosComment("OPEN", "d.java", 5, "// OPEN bb"));
-		comments.add(new TodosComment("FIXME", "bb.java", 5, "// FIXME bb"));
-		comments.add(new TodosComment("FIXME", "bb.java", 55, "// FIXME bb"));
-		comments.add(new TodosComment("FIXME", "bb.java", 56, "// FIXME bb"));
-		comments.add(new TodosComment("FIXME", "bb.java", 54, "// FIXME bb"));
-		comments.add(new TodosComment("FIXME", "bb.java", 555, "// FIXME bb"));
+		File destDir = new File(owner.getRootDir(), TodosConstants.BUILD_SUBDIR);
 
-		return new TodosReport(comments);
+		if (!destDir.exists()) {
+			return new TodosReport();
+		}
+
+		return TodosParser.parseFiles(destDir.listFiles());
 	}
 }

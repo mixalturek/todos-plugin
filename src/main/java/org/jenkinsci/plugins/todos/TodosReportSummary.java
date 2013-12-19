@@ -98,15 +98,9 @@ public class TodosReportSummary implements Serializable {
 		if (current != null) {
 			for (PatternStatistics statistics : current.getPatternStatistics()) {
 				builder.append("<li>");
-				builder.append("<a href=\"");
-				builder.append(TodosBuildAction.URL_NAME);
-				// TODO: constants, was /languageResult/
-				builder.append("/patternResult/");
-				builder.append(HtmlUtils.encodeUrl(statistics.getPatternName()));
-				builder.append("\">");
 				builder.append(HtmlUtils.encodeText(
 						statistics.getPatternName(), true));
-				builder.append("</a>: ");
+				builder.append(": ");
 				builder.append(statistics.getNumOccurrences());
 
 				if (previous != null) {

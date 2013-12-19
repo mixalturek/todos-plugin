@@ -146,7 +146,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 		}
 
 		for (File sourceFile : sourceFiles) {
-			File masterFile = new File(destDir, String.valueOf(sourceFile
+			File masterFile = new File(destDir, Integer.toHexString(sourceFile
 					.hashCode()) + "_" + sourceFile.getName());
 
 			if (!masterFile.exists()) {
