@@ -13,16 +13,16 @@
 				<thead>
 					<tr>
 						<td class="pane-header">${%File}</td>
-						<td class="pane-header" style="width: 4em;">${%Line}</td>
-						<td class="pane-header" style="width: 7em;">${%Pattern}</td>
-						<td class="pane-header" style="width: 70%;">${%Comment}</td>
+						<td class="pane-header">${%Line}</td>
+						<td class="pane-header">${%Pattern}</td>
+						<td class="pane-header" style="width: 60%;">${%Comment}</td>
 					</tr>
 				</thead>
 				<tbody>
 					<j:forEach var="comment" items="${cachedReport.comments}">
 					<tr>
-						<td class="pane">${comment.fileHtml}</td>
-						<td class="pane" style="text-align: right;">${comment.line}</td>
+						<td class="pane" style="white-space: normal;">${comment.fileHtmlExtraSpaces}</td>
+						<td class="pane">${comment.line}</td>
 						<td class="pane">${comment.patternHtml}</td>
 						<td class="pane"><pre>${comment.textHtml}</pre></td>
 					</tr>

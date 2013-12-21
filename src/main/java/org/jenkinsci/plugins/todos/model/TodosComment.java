@@ -24,6 +24,7 @@
  */
 package org.jenkinsci.plugins.todos.model;
 
+import java.io.File;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -99,6 +100,19 @@ public class TodosComment implements Serializable {
 		return HtmlUtils.encodeText(file, true);
 	}
 
+	/**
+	 * Helper method that returns the path with space after each slash to allow
+	 * line wrap of long paths in a HTML table.
+	 * 
+	 * That's not a bug, that's a feature!
+	 * 
+	 * @return the original path with spaces around each slash
+	 */
+	public String getFileHtmlExtraSpaces() {
+		return HtmlUtils.encodeText(file, true).replace(File.separator,
+				"&nbsp;" + File.separator + " ");
+	}
+
 	public int getLine() {
 		return line;
 	}
@@ -108,6 +122,6 @@ public class TodosComment implements Serializable {
 	}
 
 	public String getTextHtml() {
-		return HtmlUtils.encodeText(text, true);
+		return HtmlUtils.encodeText(text, false);
 	}
 }
