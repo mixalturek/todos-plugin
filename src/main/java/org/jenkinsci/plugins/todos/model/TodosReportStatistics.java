@@ -27,16 +27,11 @@ package org.jenkinsci.plugins.todos.model;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
- * Statistics for a report. The class is thread safe after it is constructed.
+ * Statistics of a report. The class is thread safe.
  * 
  * @author Michal Turek
  */
@@ -44,140 +39,98 @@ public class TodosReportStatistics implements Serializable {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0L;
 
-	/** Paths of source files that were used for parsing. */
+	/** Statistics per patterns. */
+	private final List<TodosPatternStatistics> patternStatistics;
+
+	/** The list of files from which the original report was created. */
 	private final transient List<File> sourceFiles;
 
-	/** Total number of comments that were found. */
-	private int totalComments;
-
-	/** Total number of files containing comments. */
-	private final int totalFiles;
-
-	/** Statistics of one concrete pattern. */
-	private final Map<String, PatternStatistics> patternStatistics = new HashMap<String, PatternStatistics>();
-
 	/**
-	 * Helper constructor for empty instance.
+	 * Helper constructor to create an empty instance.
 	 */
 	public TodosReportStatistics() {
-		this(new TodosReport(), new ArrayList<File>());
+		this(new ArrayList<TodosPatternStatistics>(), new ArrayList<File>());
 	}
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param report
-	 *            the source report
+	 * @param patternStatistics
+	 *            statistics per patterns
 	 * @param sourceFiles
-	 *            the files from which the report was created
+	 *            the list of files from which the original report was created
 	 */
-	public TodosReportStatistics(TodosReport report, List<File> sourceFiles) {
+	public TodosReportStatistics(
+			List<TodosPatternStatistics> patternStatistics,
+			List<File> sourceFiles) {
+		this.patternStatistics = Collections
+				.unmodifiableList(patternStatistics);
 		this.sourceFiles = Collections.unmodifiableList(sourceFiles);
-
-		Set<String> filesWithComments = new HashSet<String>();
-
-		for (TodosComment comment : report.getComments()) {
-			++totalComments;
-			filesWithComments.add(comment.getFile());
-
-			PatternStatistics storedPattern = patternStatistics.get(comment
-					.getPattern());
-
-			if (storedPattern == null) {
-				storedPattern = new PatternStatistics();
-				storedPattern.patternName = comment.getPattern();
-				storedPattern.numOccurrences = 1;
-				storedPattern.filesWithComment.add(comment.getFile());
-				patternStatistics.put(comment.getPattern(), storedPattern);
-			} else {
-				++storedPattern.numOccurrences;
-				storedPattern.filesWithComment.add(comment.getFile());
-			}
-		}
-
-		totalFiles = filesWithComments.size();
-
-		for (Map.Entry<String, PatternStatistics> entry : patternStatistics
-				.entrySet()) {
-			entry.getValue().numFiles = entry.getValue().filesWithComment
-					.size();
-
-			// Release the memory
-			entry.getValue().filesWithComment = null;
-		}
 	}
 
+	/**
+	 * Get list of files from which the original report was created.
+	 * 
+	 * @return unmodifiable list with files
+	 */
 	public List<File> getSourceFiles() {
-		// It is already an unmodifiable list
 		return sourceFiles;
 	}
 
-	public int getTotalComments() {
-		return totalComments;
-	}
+	/**
+	 * Get number of comments that were found.
+	 * 
+	 * @return the number of comments
+	 */
+	public int getNumComments() {
+		int numComments = 0;
 
-	public int getTotalFiles() {
-		return totalFiles;
-	}
+		for (TodosPatternStatistics statistics : patternStatistics) {
+			numComments += statistics.getNumOccurrences();
+		}
 
-	public Collection<PatternStatistics> getPatternStatistics() {
-		// There are no public methods to update the values
-		return patternStatistics.values();
+		return numComments;
 	}
 
 	/**
-	 * Get statistics for a concrete pattern.
+	 * Get number of files containing the comments.
 	 * 
-	 * @param patternName
+	 * @return the number of files
+	 */
+	public int getNumFiles() {
+		int numFiles = 0;
+
+		for (TodosPatternStatistics statistics : patternStatistics) {
+			numFiles += statistics.getNumFiles();
+		}
+
+		return numFiles;
+	}
+
+	/**
+	 * Get statistics of all patterns.
+	 * 
+	 * @return unmodifiable list with statistics
+	 */
+	public List<TodosPatternStatistics> getPatternStatistics() {
+		return patternStatistics;
+	}
+
+	/**
+	 * Get statistics of a concrete pattern.
+	 * 
+	 * @param pattern
 	 *            the pattern name
 	 * @return the statistics of the pattern; if no statistics for such pattern
-	 *         name are defined a new object initialized with zeros will be
-	 *         returned
+	 *         is defined a new object initialized with zeros will be returned
 	 */
-	public PatternStatistics getPatternStatistics(String patternName) {
-		PatternStatistics pattern = patternStatistics.get(patternName);
-
-		if (pattern == null) {
-			pattern = new PatternStatistics();
-			pattern.patternName = patternName;
-			pattern.numOccurrences = 0;
-			pattern.numFiles = 0;
+	public TodosPatternStatistics getPatternStatistics(String pattern) {
+		for (TodosPatternStatistics statistics : patternStatistics) {
+			if (statistics.getPattern().equals(pattern)) {
+				return statistics;
+			}
 		}
 
-		return pattern;
-	}
-
-	/**
-	 * Statistic for one pattern.
-	 * 
-	 * @author Michal Turek
-	 */
-	public static class PatternStatistics implements Serializable {
-		/** Serial version UID. */
-		private static final long serialVersionUID = 0L;
-
-		/** The pattern name. */
-		private String patternName;
-
-		/** Number of occurrences of a pattern. */
-		private int numOccurrences;
-
-		/** Number of files with a pattern. */
-		private int numFiles;
-
-		/** Helper structure to compute number of files with this pattern. */
-		private transient Set<String> filesWithComment = new HashSet<String>();
-
-		public String getPatternName() {
-			return patternName;
-		}
-
-		public int getNumOccurrences() {
-			return numOccurrences;
-		}
-
-		public int getNumFiles() {
-			return numFiles;
-		}
+		return new TodosPatternStatistics(pattern, 0, 0);
 	}
 }

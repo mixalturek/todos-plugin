@@ -110,10 +110,7 @@ public class TodosParser implements
 			}
 		}
 
-		// TODO: Simplify names if needed.
-		// report.simplifyNames();
-
-		return new TodosReportStatistics(report, new ArrayList<File>(paths));
+		return report.getStatistics(new ArrayList<File>(paths));
 	}
 
 	/**

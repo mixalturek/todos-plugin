@@ -26,8 +26,8 @@ package org.jenkinsci.plugins.todos;
 
 import java.io.Serializable;
 
+import org.jenkinsci.plugins.todos.model.TodosPatternStatistics;
 import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
-import org.jenkinsci.plugins.todos.model.TodosReportStatistics.PatternStatistics;
 
 /**
  * Display the report summary and top-level details.
@@ -55,11 +55,11 @@ public class TodosReportSummary implements Serializable {
 			builder.append("<a href=\"");
 			builder.append(TodosBuildAction.URL_NAME);
 			builder.append("\">");
-			builder.append(current.getTotalComments());
+			builder.append(current.getNumComments());
 
 			if (previous != null) {
-				printDifference(current.getTotalComments(),
-						previous.getTotalComments(), builder);
+				printDifference(current.getNumComments(),
+						previous.getNumComments(), builder);
 			}
 
 			builder.append(" ");
@@ -67,11 +67,11 @@ public class TodosReportSummary implements Serializable {
 			builder.append("</a> ");
 			builder.append(Messages.Todos_ReportSummary_in());
 			builder.append(" ");
-			builder.append(current.getTotalFiles());
+			builder.append(current.getNumFiles());
 
 			if (previous != null) {
-				printDifference(current.getTotalFiles(),
-						previous.getTotalFiles(), builder);
+				printDifference(current.getNumFiles(), previous.getNumFiles(),
+						builder);
 			}
 
 			builder.append(" ");
@@ -96,17 +96,19 @@ public class TodosReportSummary implements Serializable {
 		StringBuilder builder = new StringBuilder();
 
 		if (current != null) {
-			for (PatternStatistics statistics : current.getPatternStatistics()) {
+			for (TodosPatternStatistics currentPatternstatistics : current
+					.getPatternStatistics()) {
 				builder.append("<li>");
-				builder.append(HtmlUtils.encodeText(
-						statistics.getPatternName(), true));
+				builder.append(currentPatternstatistics.getPatternHtml());
 				builder.append(": ");
-				builder.append(statistics.getNumOccurrences());
+				builder.append(currentPatternstatistics.getNumOccurrences());
 
 				if (previous != null) {
-					printDifference(statistics.getNumOccurrences(), previous
-							.getPatternStatistics(statistics.getPatternName())
-							.getNumOccurrences(), builder);
+					printDifference(
+							currentPatternstatistics.getNumOccurrences(),
+							previous.getPatternStatistics(
+									currentPatternstatistics.getPattern())
+									.getNumOccurrences(), builder);
 				}
 
 				builder.append(" ");
@@ -114,16 +116,14 @@ public class TodosReportSummary implements Serializable {
 				builder.append(" ");
 				builder.append(Messages.Todos_ReportSummary_in());
 				builder.append(" ");
-				builder.append(current.getPatternStatistics(
-						statistics.getPatternName()).getNumFiles());
+				builder.append(currentPatternstatistics.getNumFiles());
 
 				if (previous != null) {
 					printDifference(
-							current.getPatternStatistics(
-									statistics.getPatternName()).getNumFiles(),
+							currentPatternstatistics.getNumFiles(),
 							previous.getPatternStatistics(
-									statistics.getPatternName()).getNumFiles(),
-							builder);
+									currentPatternstatistics.getPattern())
+									.getNumFiles(), builder);
 				}
 
 				builder.append(" ");

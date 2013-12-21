@@ -24,7 +24,7 @@
  */
 package org.jenkinsci.plugins.todos.model;
 
-import java.io.Serializable;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,16 +40,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Report that stores all comments that were found.
+ * Report that stores all comments that were found. The class is thread safe.
  * 
  * @author Michal Turek
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(namespace = "http://todos.sourceforge.net", name = "comments")
-public class TodosReport implements Serializable {
-	/** Serial version UID. */
-	private static final long serialVersionUID = 0;
-
+public class TodosReport {
 	/** All comments that were found. */
 	@XmlElement(namespace = "http://todos.sourceforge.net", name = "comment", type = TodosComment.class)
 	private final List<TodosComment> comments;
@@ -59,7 +56,7 @@ public class TodosReport implements Serializable {
 	private final String version;
 
 	/**
-	 * Constructor initializing an empty instance.
+	 * Helper constructor to create an empty instance.
 	 */
 	public TodosReport() {
 		this(Collections.<TodosComment> emptyList(), "");
@@ -126,87 +123,99 @@ public class TodosReport implements Serializable {
 	}
 
 	/**
-	 * Get number of comments containing a pattern.
+	 * Get the statistics for this report.
 	 * 
-	 * @param pattern
-	 *            the pattern
-	 * @return the number of comments with the specified pattern
+	 * @param sourceFiles
+	 *            the list of files from which the original report was created
+	 * @return the statistics
 	 */
-	public int getCommentsWithPatternCount(String pattern) {
-		if (pattern == null) {
-			return 0;
-		}
-
-		int num = 0;
+	public TodosReportStatistics getStatistics(List<File> sourceFiles) {
+		Set<String> filesWithComments = new HashSet<String>();
+		Map<String, PatternStatistics> patternStatistics = new HashMap<String, PatternStatistics>();
 
 		for (TodosComment comment : comments) {
-			if (pattern.equals(comment.getPattern())) {
-				++num;
-			}
-		}
+			filesWithComments.add(comment.getFile());
 
-		return num;
-	}
+			PatternStatistics storedPattern = patternStatistics.get(comment
+					.getPattern());
 
-	/**
-	 * Get mapping of patterns to their counts in the comments.
-	 * 
-	 * @return the mapping; the key is pattern, the value is the number of its
-	 *         occurrences in the comments
-	 */
-	public Map<String, Integer> getPatternsToCountMapping() {
-		Map<String, Integer> results = new HashMap<String, Integer>();
-
-		for (TodosComment comment : getComments()) {
-			Integer num = results.get(comment.getPattern());
-
-			if (num == null) {
-				results.put(comment.getPattern(), 1);
+			if (storedPattern == null) {
+				storedPattern = new PatternStatistics(comment.getPattern(),
+						comment.getFile());
+				patternStatistics.put(comment.getPattern(), storedPattern);
 			} else {
-				results.put(comment.getPattern(), num + 1);
+				storedPattern.increment(comment.getFile());
 			}
 		}
 
-		return results;
+		return convertStatistics(patternStatistics, sourceFiles);
 	}
 
 	/**
-	 * Get files containing at least one comment.
+	 * Convert statistics from internal to the final one.
 	 * 
-	 * @return the files containing at least one comment
+	 * @param sourceStatistics
+	 *            the source statistics
+	 * @param sourceFiles
+	 *            the list of files from which the original report was created
+	 * @return the statistics
 	 */
-	public Set<String> getFiles() {
-		Set<String> files = new HashSet<String>();
+	private TodosReportStatistics convertStatistics(
+			Map<String, PatternStatistics> sourceStatistics,
+			List<File> sourceFiles) {
+		List<TodosPatternStatistics> statistics = new ArrayList<TodosPatternStatistics>(
+				sourceStatistics.size());
 
-		for (TodosComment comment : comments) {
-			files.add(comment.getFile());
+		for (Map.Entry<String, PatternStatistics> entry : sourceStatistics
+				.entrySet()) {
+			statistics.add(new TodosPatternStatistics(entry.getValue().pattern,
+					entry.getValue().numOccurrences,
+					entry.getValue().filesWithComment.size()));
 		}
 
-		return files;
+		return new TodosReportStatistics(statistics, sourceFiles);
 	}
 
 	/**
-	 * Get files containing at least one comment with the specified pattern.
+	 * Helper structure to compute statistics of a pattern. For internal use
+	 * only.
 	 * 
-	 * @param pattern
-	 *            the pattern
-	 * 
-	 * @return the files containing at least one comment with the specified
-	 *         pattern
+	 * @author Michal Turek
 	 */
-	public Set<String> getFilesWithPattern(String pattern) {
-		Set<String> files = new HashSet<String>();
+	private static class PatternStatistics {
+		/** The pattern name. */
+		public String pattern;
 
-		if (pattern == null) {
-			return files;
+		/** Number of occurrences of a pattern. */
+		public int numOccurrences;
+
+		/** Helper structure to compute number of files with this pattern. */
+		public Set<String> filesWithComment;
+
+		/**
+		 * Constructor initializing members.
+		 * 
+		 * @param pattern
+		 *            the pattern name
+		 * @param file
+		 *            the file in which the comment was found
+		 */
+		public PatternStatistics(String pattern, String file) {
+			this.pattern = pattern;
+			this.numOccurrences = 1;
+			this.filesWithComment = new HashSet<String>();
+			filesWithComment.add(file);
 		}
 
-		for (TodosComment comment : comments) {
-			if (pattern.equals(comment.getPattern())) {
-				files.add(comment.getFile());
-			}
+		/**
+		 * New occurrence was found, increment the counters.
+		 * 
+		 * @param file
+		 *            the file in which the comment was found
+		 */
+		public void increment(String file) {
+			++numOccurrences;
+			filesWithComment.add(file);
 		}
-
-		return files;
 	}
 }

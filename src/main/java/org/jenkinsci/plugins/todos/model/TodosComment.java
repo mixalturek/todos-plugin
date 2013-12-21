@@ -53,7 +53,9 @@ public class TodosComment implements Serializable {
 	@XmlAttribute
 	private final int line;
 
-	/** The matching line and optionally several lines after it. */
+	/**
+	 * Source code with the matching line and optionally several lines after it.
+	 */
 	@XmlValue
 	private final String sourceCode;
 
@@ -84,18 +86,38 @@ public class TodosComment implements Serializable {
 		this(null, null, 0, null);
 	}
 
+	/**
+	 * The pattern using which this comment was found.
+	 * 
+	 * @return the pattern
+	 */
 	public String getPattern() {
 		return pattern;
 	}
 
+	/**
+	 * The pattern using which this comment was found.
+	 * 
+	 * @return the HTML encoded pattern
+	 */
 	public String getPatternHtml() {
 		return HtmlUtils.encodeText(pattern, true);
 	}
 
+	/**
+	 * Get the input file where the comment was found.
+	 * 
+	 * @return the path
+	 */
 	public String getFile() {
 		return file;
 	}
 
+	/**
+	 * Get the input file where the comment was found.
+	 * 
+	 * @return the HTML encoded path
+	 */
 	public String getFileHtml() {
 		return HtmlUtils.encodeText(file, true);
 	}
@@ -113,14 +135,31 @@ public class TodosComment implements Serializable {
 				"&nbsp;" + File.separator + " ");
 	}
 
+	/**
+	 * Geth the position in the file, line number.
+	 * 
+	 * @return the line
+	 */
 	public int getLine() {
 		return line;
 	}
 
+	/**
+	 * Get the source code with the matching line and optionally several lines
+	 * after it.
+	 * 
+	 * @return the source code
+	 */
 	public String getSourceCode() {
 		return sourceCode;
 	}
 
+	/**
+	 * Get the source code with the matching line and optionally several lines
+	 * after it.
+	 * 
+	 * @return the HTML encoded source code
+	 */
 	public String getSourceCodeHtml() {
 		return HtmlUtils.encodeText(sourceCode, false);
 	}
