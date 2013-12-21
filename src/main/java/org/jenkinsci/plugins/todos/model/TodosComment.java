@@ -55,7 +55,7 @@ public class TodosComment implements Serializable {
 
 	/** The matching line and optionally several lines after it. */
 	@XmlValue
-	private final String text;
+	private final String sourceCode;
 
 	/**
 	 * Constructor initializing members.
@@ -66,14 +66,14 @@ public class TodosComment implements Serializable {
 	 *            the input file where the comment was found
 	 * @param line
 	 *            the position in the file, line number
-	 * @param text
+	 * @param sourceCode
 	 *            the matching line and optionally several lines after it
 	 */
-	public TodosComment(String pattern, String file, int line, String text) {
+	public TodosComment(String pattern, String file, int line, String sourceCode) {
 		this.pattern = pattern;
 		this.file = file;
 		this.line = line;
-		this.text = text;
+		this.sourceCode = sourceCode;
 	}
 
 	/**
@@ -117,11 +117,11 @@ public class TodosComment implements Serializable {
 		return line;
 	}
 
-	public String getText() {
-		return text;
+	public String getSourceCode() {
+		return sourceCode;
 	}
 
-	public String getTextHtml() {
-		return HtmlUtils.encodeText(text, false);
+	public String getSourceCodeHtml() {
+		return HtmlUtils.encodeText(sourceCode, false);
 	}
 }

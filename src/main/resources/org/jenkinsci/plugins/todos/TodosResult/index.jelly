@@ -24,7 +24,7 @@
 						<td class="pane" style="white-space: normal;">${comment.fileHtmlExtraSpaces}</td>
 						<td class="pane">${comment.line}</td>
 						<td class="pane">${comment.patternHtml}</td>
-						<td class="pane"><pre>${comment.textHtml}</pre></td>
+						<td class="pane"><pre>${comment.sourceCodeHtml}</pre></td>
 					</tr>
 					</j:forEach>
 				</tbody>
