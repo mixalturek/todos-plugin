@@ -44,8 +44,6 @@ public class TodosProjectAction implements Action, Serializable {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
-	public static final String URL_NAME = "todosResult";
-
 	public static final int CHART_WIDTH = 500;
 	public static final int CHART_HEIGHT = 200;
 
@@ -64,7 +62,7 @@ public class TodosProjectAction implements Action, Serializable {
 	}
 
 	public String getUrlName() {
-		return URL_NAME;
+		return TodosConstants.RESULTS_URL;
 	}
 
 	/**
@@ -83,7 +81,7 @@ public class TodosProjectAction implements Action, Serializable {
 		AbstractBuild<?, ?> build = getLastFinishedBuild();
 		if (build != null) {
 			response.sendRedirect2(String.format("../%d/%s", build.getNumber(),
-					TodosBuildAction.URL_NAME));
+					TodosConstants.RESULTS_URL));
 		}
 	}
 

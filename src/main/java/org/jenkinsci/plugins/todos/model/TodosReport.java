@@ -67,8 +67,6 @@ public class TodosReport {
 	 * 
 	 * @param comments
 	 *            all comments that were found
-	 * @param version
-	 *            the version of the file format if loaded from a file
 	 */
 	public TodosReport(List<TodosComment> comments) {
 		this(comments, "");
@@ -140,9 +138,10 @@ public class TodosReport {
 					.getPattern());
 
 			if (storedPattern == null) {
-				storedPattern = new PatternStatistics(comment.getPattern(),
-						comment.getFile());
-				patternStatistics.put(comment.getPattern(), storedPattern);
+				patternStatistics.put(
+						comment.getPattern(),
+						new PatternStatistics(comment.getPattern(), comment
+								.getFile()));
 			} else {
 				storedPattern.increment(comment.getFile());
 			}

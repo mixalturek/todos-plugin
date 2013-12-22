@@ -41,9 +41,6 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
-	// TODO: Move to constants
-	public static final String URL_NAME = "todosResult";
-
 	private final AbstractBuild<?, ?> build;
 	private final TodosResult result;
 
@@ -61,7 +58,7 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	}
 
 	public String getUrlName() {
-		return URL_NAME;
+		return TodosConstants.RESULTS_URL;
 	}
 
 	public String getSummary() {

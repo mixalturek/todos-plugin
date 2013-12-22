@@ -52,7 +52,7 @@ public class TodosChartBuilder implements Serializable {
 	private static final long serialVersionUID = 0;
 
 	/**
-	 * Build a trend chart from provided data.
+	 * Build a trend chart from the provided data.
 	 * 
 	 * @param action
 	 *            the build action
@@ -84,7 +84,7 @@ public class TodosChartBuilder implements Serializable {
 		NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
-		// crop extra space around the graph
+		// Crop extra space around the graph
 		plot.setInsets(new RectangleInsets(0, 0, 0, 5.0));
 
 		TodosAreaRenderer renderer = new TodosAreaRenderer(action.getUrlName());
@@ -102,10 +102,9 @@ public class TodosChartBuilder implements Serializable {
 	 */
 	private static CategoryDataset buildDataset(TodosBuildAction lastAction) {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
-
 		TodosBuildAction action = lastAction;
 
-		do {
+		while (action != null) {
 			TodosResult result = action.getResult();
 
 			if (result != null) {
@@ -120,7 +119,7 @@ public class TodosChartBuilder implements Serializable {
 			}
 
 			action = action.getPreviousAction();
-		} while (action != null);
+		}
 
 		return builder.build();
 	}

@@ -53,7 +53,7 @@ public class TodosReportSummary implements Serializable {
 
 		if (current != null) {
 			builder.append("<a href=\"");
-			builder.append(TodosBuildAction.URL_NAME);
+			builder.append(TodosConstants.RESULTS_URL);
 			builder.append("\">");
 			builder.append(current.getNumComments());
 

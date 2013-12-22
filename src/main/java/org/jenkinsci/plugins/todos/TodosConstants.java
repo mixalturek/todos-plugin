@@ -41,4 +41,7 @@ public class TodosConstants {
 
 	/** Subdirectory of build results directory where source files are stored. */
 	public static final String BUILD_SUBDIR = "todos-plugin";
+
+	/** Results page URL. */
+	public static final String RESULTS_URL = "todosResult";
 }
