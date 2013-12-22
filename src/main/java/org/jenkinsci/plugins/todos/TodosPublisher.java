@@ -102,8 +102,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 			return false;
 		}
 
-		TodosResult result = new TodosResult(statistics, build);
-		build.addAction(new TodosBuildAction(build, result));
+		build.addAction(new TodosBuildAction(build, statistics));
 
 		try {
 			copyFilesToBuildDirectory(statistics.getSourceFiles(),

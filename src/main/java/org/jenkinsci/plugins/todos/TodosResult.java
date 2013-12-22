@@ -27,40 +27,45 @@ package org.jenkinsci.plugins.todos;
 import hudson.model.AbstractBuild;
 
 import java.io.File;
-import java.io.Serializable;
 
 import org.jenkinsci.plugins.todos.model.TodosParser;
 import org.jenkinsci.plugins.todos.model.TodosReport;
-import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 
 /**
- * TODO: Description.
+ * Result object, that is responsible for processing web requests.
  * 
  * @author Michal Turek
  */
-public class TodosResult implements Serializable {
-	/** Serial version UID. */
-	private static final long serialVersionUID = 0;
+public class TodosResult {
+	/** The build of this report. */
+	private final AbstractBuild<?, ?> build;
 
-	private final TodosReportStatistics statistics;
-	private final AbstractBuild<?, ?> owner;
-
-	public TodosResult(TodosReportStatistics statistics,
-			AbstractBuild<?, ?> owner) {
-		this.statistics = statistics;
-		this.owner = owner;
+	/**
+	 * Constructor.
+	 * 
+	 * @param build
+	 *            the build of this report
+	 */
+	public TodosResult(AbstractBuild<?, ?> build) {
+		this.build = build;
 	}
 
-	public TodosReportStatistics getStatistics() {
-		return statistics;
+	/**
+	 * Get the build.
+	 * 
+	 * @return the build
+	 */
+	public AbstractBuild<?, ?> getBuild() {
+		return build;
 	}
 
-	public AbstractBuild<?, ?> getOwner() {
-		return owner;
-	}
-
+	/**
+	 * Get the report.
+	 * 
+	 * @return the report
+	 */
 	public TodosReport getReport() {
-		File destDir = new File(owner.getRootDir(), TodosConstants.BUILD_SUBDIR);
+		File destDir = new File(build.getRootDir(), TodosConstants.BUILD_SUBDIR);
 
 		if (!destDir.exists()) {
 			return new TodosReport();

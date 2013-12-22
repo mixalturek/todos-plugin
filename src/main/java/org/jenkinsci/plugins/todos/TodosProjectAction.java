@@ -105,26 +105,20 @@ public class TodosProjectAction implements Action, Serializable {
 		AbstractBuild<?, ?> build = getLastFinishedBuild();
 
 		if (build != null) {
-			TodosBuildAction resultAction = build
-					.getAction(TodosBuildAction.class);
+			TodosBuildAction action = build.getAction(TodosBuildAction.class);
 
-			if (resultAction != null) {
-				int nbr_results = 0;
+			int numResults = 0;
 
-				do {
-					TodosResult result = resultAction.getResult();
+			while (action != null) {
+				if (action.getStatistics() != null) {
+					++numResults;
 
-					if (result != null) {
-						nbr_results++;
-
-						if (nbr_results > 1) {
-							return true;
-						}
+					if (numResults > 1) {
+						return true;
 					}
+				}
 
-					resultAction = resultAction.getPreviousAction();
-
-				} while (resultAction != null);
+				action = action.getPreviousAction();
 			}
 		}
 

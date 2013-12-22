@@ -42,11 +42,12 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	private static final long serialVersionUID = 0;
 
 	private final AbstractBuild<?, ?> build;
-	private final TodosResult result;
+	private final TodosReportStatistics statistics;
 
-	public TodosBuildAction(AbstractBuild<?, ?> build, TodosResult result) {
+	public TodosBuildAction(AbstractBuild<?, ?> build,
+			TodosReportStatistics statistics) {
 		this.build = build;
-		this.result = result;
+		this.statistics = statistics;
 	}
 
 	public String getIconFileName() {
@@ -64,9 +65,9 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	public String getSummary() {
 		String retVal = "";
 
-		if (result != null) {
-			retVal = TodosReportSummary.createReportSummary(
-					result.getStatistics(), getPreviousStatistics());
+		if (statistics != null) {
+			retVal = TodosReportSummary.createReportSummary(statistics,
+					getPreviousStatistics());
 		}
 
 		return retVal;
@@ -75,36 +76,27 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	public String getDetails() {
 		String retVal = "";
 
-		if (result != null) {
-			retVal = TodosReportSummary.createReportSummaryDetails(
-					result.getStatistics(), getPreviousStatistics());
+		if (statistics != null) {
+			retVal = TodosReportSummary.createReportSummaryDetails(statistics,
+					getPreviousStatistics());
 		}
 
 		return retVal;
 	}
 
-	public TodosResult getResult() {
-		return result;
+	public TodosReportStatistics getStatistics() {
+		return statistics;
 	}
 
-	private TodosReportStatistics getPreviousStatistics() {
-		TodosResult previous = getPreviousResult();
-		if (previous == null) {
-			return null;
-		} else {
-			return previous.getStatistics();
-		}
-	}
-
-	TodosResult getPreviousResult() {
+	TodosReportStatistics getPreviousStatistics() {
 		TodosBuildAction previousAction = getPreviousAction();
-		TodosResult previousResult = null;
+		TodosReportStatistics previousStatistics = null;
 
 		if (previousAction != null) {
-			previousResult = previousAction.getResult();
+			previousStatistics = previousAction.getStatistics();
 		}
 
-		return previousResult;
+		return previousStatistics;
 	}
 
 	TodosBuildAction getPreviousAction() {
@@ -115,6 +107,7 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 				return previousBuild.getAction(TodosBuildAction.class);
 			}
 		}
+
 		return null;
 	}
 
@@ -123,6 +116,6 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	}
 
 	public Object getTarget() {
-		return result;
+		return new TodosResult(build);
 	}
 }

@@ -105,13 +105,11 @@ public class TodosChartBuilder implements Serializable {
 		TodosBuildAction action = lastAction;
 
 		while (action != null) {
-			TodosResult result = action.getResult();
-
-			if (result != null) {
+			if (action.getStatistics() != null) {
 				NumberOnlyBuildLabel buildLabel = new NumberOnlyBuildLabel(
 						action.getBuild());
 
-				for (TodosPatternStatistics statistics : result.getStatistics()
+				for (TodosPatternStatistics statistics : action.getStatistics()
 						.getPatternStatistics()) {
 					builder.add(statistics.getNumOccurrences(),
 							statistics.getPattern(), buildLabel);
