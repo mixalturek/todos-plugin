@@ -123,16 +123,14 @@ public class TodosComment implements Serializable {
 	}
 
 	/**
-	 * Helper method that returns the path with space after each slash to allow
-	 * line wrap of long paths in a HTML table.
+	 * Get the input file where the comment was found. Allow wrap of long paths
+	 * in a HTML table.
 	 * 
-	 * That's not a bug, that's a feature!
-	 * 
-	 * @return the original path with spaces around each slash
+	 * @return the HTML encoded path with <wbr /> element after each slash
 	 */
-	public String getFileHtmlExtraSpaces() {
+	public String getFileHtmlWrap() {
 		return HtmlUtils.encodeText(file, true).replace(File.separator,
-				"&nbsp;" + File.separator + " ");
+				File.separator + "<wbr />");
 	}
 
 	/**
