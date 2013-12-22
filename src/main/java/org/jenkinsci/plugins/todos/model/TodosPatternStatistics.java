@@ -78,7 +78,7 @@ public class TodosPatternStatistics implements Serializable {
 	 * @return the HTML encoded name
 	 */
 	public String getPatternHtml() {
-		return HtmlUtils.encodeText(pattern, true);
+		return HtmlUtils.encodeText(pattern, false);
 	}
 
 	/**

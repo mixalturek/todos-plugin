@@ -98,9 +98,9 @@ public class TodosReportSummary implements Serializable {
 		if (current != null) {
 			for (TodosPatternStatistics currentPatternstatistics : current
 					.getPatternStatistics()) {
-				builder.append("<li>");
+				builder.append("<li><pre style=\"display: inline;\">");
 				builder.append(currentPatternstatistics.getPatternHtml());
-				builder.append(": ");
+				builder.append("</pre>: ");
 				builder.append(currentPatternstatistics.getNumOccurrences());
 
 				if (previous != null) {

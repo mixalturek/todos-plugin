@@ -101,7 +101,7 @@ public class TodosComment implements Serializable {
 	 * @return the HTML encoded pattern
 	 */
 	public String getPatternHtml() {
-		return HtmlUtils.encodeText(pattern, true);
+		return HtmlUtils.encodeText(pattern, false);
 	}
 
 	/**
