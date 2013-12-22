@@ -138,7 +138,7 @@ public class TodosParser implements
 	}
 
 	/**
-	 * Helper method to parse one input file.
+	 * Parse one input file.
 	 * 
 	 * @param file
 	 *            the file to be parsed
@@ -176,6 +176,7 @@ public class TodosParser implements
 					TodosConstants.JENKINS_TODOS_PLUGIN, file.getAbsolutePath());
 		}
 
+		// The constant is not available in this version of Java
 		String W3C_XML_SCHEMA_NS_URI = "http://www.w3.org/2001/XMLSchema";
 		SchemaFactory sf = SchemaFactory
 				.newInstance(/* XMLConstants. */W3C_XML_SCHEMA_NS_URI);
@@ -222,20 +223,19 @@ public class TodosParser implements
 	 * 
 	 * @param exception
 	 *            the root exception to search a message in
-	 * @return the message if found, otherwise an empty string
+	 * @return the first non empty message if found, otherwise an empty string
 	 */
 	private String findExceptionMessage(Throwable exception) {
-		String message = "";
 		Throwable cause = exception;
 
-		while (cause.getMessage() == null && cause.getCause() != null) {
+		while (cause != null) {
+			if (cause.getMessage() != null && !cause.getMessage().isEmpty()) {
+				return cause.getMessage();
+			}
+
 			cause = cause.getCause();
 		}
 
-		if (cause != null) {
-			message = cause.getMessage();
-		}
-
-		return message;
+		return "";
 	}
 }
