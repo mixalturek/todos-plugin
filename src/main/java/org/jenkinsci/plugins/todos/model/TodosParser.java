@@ -63,7 +63,7 @@ public class TodosParser implements
 	private final PrintStream logger;
 
 	/**
-	 * Constructructor initializing members.
+	 * Constructor initializing members.
 	 * 
 	 * @param filePattern
 	 *            pattern for searching the input files
@@ -84,14 +84,15 @@ public class TodosParser implements
 	public TodosReportStatistics invoke(File workspace, VirtualChannel channel)
 			throws IOException {
 		String[] files = findFiles(workspace, filePattern);
-		TodosReport report = new TodosReport();
 
 		if (files.length == 0) {
-			logger.format("%s No file if matching the input pattern: %s %s\n",
-					TodosConstants.WARNING, filePattern,
-					TodosConstants.JENKINS_TODOS_PLUGIN);
+			logger.format("%s %s: No file if matching the input pattern: %s\n",
+					TodosConstants.JENKINS_TODOS_PLUGIN,
+					TodosConstants.WARNING, filePattern);
+			return new TodosReportStatistics();
 		}
 
+		TodosReport report = new TodosReport();
 		Set<File> paths = new HashSet<File>();
 
 		for (String filename : files) {
@@ -100,13 +101,11 @@ public class TodosParser implements
 				report = report.concatenate(parse(inputFile, logger));
 				paths.add(inputFile);
 			} catch (SAXException e) {
-				throw new IOException("File parsing failed: " + filename + ", "
-						+ findExceptionMessage(e) + " "
-						+ TodosConstants.JENKINS_TODOS_PLUGIN, e);
+				throw new IOException("Parsing failed: " + filename + ", "
+						+ findExceptionMessage(e), e);
 			} catch (JAXBException e) {
-				throw new IOException("File parsing failed: " + filename + ", "
-						+ findExceptionMessage(e) + " "
-						+ TodosConstants.JENKINS_TODOS_PLUGIN, e);
+				throw new IOException("Parsing failed: " + filename + ", "
+						+ findExceptionMessage(e), e);
 			}
 		}
 
@@ -127,11 +126,11 @@ public class TodosParser implements
 			try {
 				report = report.concatenate(parse(file, null));
 			} catch (SAXException e) {
-				// Silently ignore, it's still a possibility that other files
-				// can be parsed successfully
+				// Silently ignore, there is still a possibility that other
+				// files can be parsed successfully
 			} catch (JAXBException e) {
-				// Silently ignore, it's still a possibility that other files
-				// can be parsed successfully
+				// Silently ignore, there is still a possibility that other
+				// files can be parsed successfully
 			}
 		}
 
@@ -155,24 +154,26 @@ public class TodosParser implements
 			throws SAXException, JAXBException {
 		if (!file.exists()) {
 			if (logger != null) {
-				logger.format("%s File does not exist: %s %s\n",
-						TodosConstants.WARNING, file.getAbsolutePath(),
-						TodosConstants.JENKINS_TODOS_PLUGIN);
+				logger.format("%s %s: File does not exist: %s\n",
+						TodosConstants.JENKINS_TODOS_PLUGIN,
+						TodosConstants.WARNING, file.getAbsolutePath());
 			}
+
 			return new TodosReport();
 		} else if (!file.isFile() || !file.canRead()) {
 			if (logger != null) {
 				logger.format(
-						"%s File is not readable, check permissions: %s %s\n",
-						TodosConstants.WARNING, file.getAbsolutePath(),
-						TodosConstants.JENKINS_TODOS_PLUGIN);
+						"%s %s: File is not readable, check permissions: %s\n",
+						TodosConstants.JENKINS_TODOS_PLUGIN,
+						TodosConstants.WARNING, file.getAbsolutePath());
 			}
+
 			return new TodosReport();
 		}
 
 		if (logger != null) {
-			logger.format("Processing file: %s %s\n", file.getAbsolutePath(),
-					TodosConstants.JENKINS_TODOS_PLUGIN);
+			logger.format("%s Processing file: %s\n",
+					TodosConstants.JENKINS_TODOS_PLUGIN, file.getAbsolutePath());
 		}
 
 		String W3C_XML_SCHEMA_NS_URI = "http://www.w3.org/2001/XMLSchema";
@@ -208,9 +209,9 @@ public class TodosParser implements
 			return fileSet.getDirectoryScanner(antProject).getIncludedFiles();
 		} catch (BuildException e) {
 			logger.format(
-					"%s Exception occurred while searching files mathing input pattern: %s %s\n",
-					TodosConstants.WARNING, pattern,
-					TodosConstants.JENKINS_TODOS_PLUGIN);
+					"%s %s: Searching files mathing input pattern failed: %s\n",
+					TodosConstants.JENKINS_TODOS_PLUGIN,
+					TodosConstants.WARNING, pattern);
 			e.printStackTrace(logger);
 			return new String[0];
 		}

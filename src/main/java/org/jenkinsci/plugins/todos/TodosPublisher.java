@@ -88,14 +88,16 @@ public class TodosPublisher extends Recorder implements Serializable {
 			if (this.canContinue(build.getResult())) {
 				statistics = workspace.act(parser);
 			} else {
-				// generate an empty report
-				// TODO: Replace this empty report with the last valid one?
 				statistics = new TodosReportStatistics();
 			}
 		} catch (IOException e) {
+			logger.format("%s %s: Processing of input files failed",
+					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		} catch (InterruptedException e) {
+			logger.format("%s %s: Processing of input files interrupted",
+					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		}
@@ -107,9 +109,15 @@ public class TodosPublisher extends Recorder implements Serializable {
 			copyFilesToBuildDirectory(statistics.getSourceFiles(),
 					build.getRootDir(), launcher.getChannel());
 		} catch (IOException e) {
+			logger.format("%s %s: Results storing failed",
+					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
 			e.printStackTrace(logger);
+			return false;
 		} catch (InterruptedException e) {
+			logger.format("%s %s: Results storing interrupted",
+					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
 			e.printStackTrace(logger);
+			return false;
 		}
 
 		return true;
@@ -141,7 +149,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 
 		if (!destDir.exists() && !destDir.mkdir()) {
 			throw new IOException(
-					"Create directory for copy of workspace files failed: "
+					"Creating directory for copy of workspace files failed: "
 							+ destDir.getAbsolutePath());
 		}
 

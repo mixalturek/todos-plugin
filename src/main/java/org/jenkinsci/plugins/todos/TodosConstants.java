@@ -31,10 +31,13 @@ package org.jenkinsci.plugins.todos;
  */
 public class TodosConstants {
 	/** String for build log to identify the messages from this plugin. */
-	public static final String JENKINS_TODOS_PLUGIN = "(Jenkins TODOs Plugin)";
+	public static final String JENKINS_TODOS_PLUGIN = "[TODOs Plugin]";
 
-	/** String specifying this is a warning message. */
-	public static final String WARNING = "WARNING:";
+	/** String specifying a warning message. */
+	public static final String WARNING = "WARNING";
+
+	/** String specifying an error message. */
+	public static final String ERROR = "ERROR";
 
 	/** Subdirectory of build results directory where source files are stored. */
 	public static final String BUILD_SUBDIR = "todos-plugin";
