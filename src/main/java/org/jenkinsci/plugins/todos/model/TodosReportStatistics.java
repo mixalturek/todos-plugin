@@ -63,9 +63,9 @@ public class TodosReportStatistics implements Serializable {
 	public TodosReportStatistics(
 			List<TodosPatternStatistics> patternStatistics,
 			List<File> sourceFiles) {
-		this.patternStatistics = Collections
-				.unmodifiableList(patternStatistics);
-		this.sourceFiles = Collections.unmodifiableList(sourceFiles);
+		this.patternStatistics = new ArrayList<TodosPatternStatistics>(
+				patternStatistics);
+		this.sourceFiles = new ArrayList<File>(sourceFiles);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class TodosReportStatistics implements Serializable {
 	 * @return unmodifiable list with files
 	 */
 	public List<File> getSourceFiles() {
-		return sourceFiles;
+		return Collections.unmodifiableList(sourceFiles);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class TodosReportStatistics implements Serializable {
 	 * @return unmodifiable list with statistics
 	 */
 	public List<TodosPatternStatistics> getPatternStatistics() {
-		return patternStatistics;
+		return Collections.unmodifiableList(patternStatistics);
 	}
 
 	/**
