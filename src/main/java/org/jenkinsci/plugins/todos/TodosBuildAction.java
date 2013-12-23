@@ -71,6 +71,15 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	}
 
 	/**
+	 * Get the large icon.
+	 * 
+	 * @return the icon
+	 */
+	public String getIconFileNameLarge() {
+		return TodosConstants.ICON_48PX;
+	}
+
+	/**
 	 * Get the display name.
 	 * 
 	 * @see hudson.model.Action#getDisplayName()

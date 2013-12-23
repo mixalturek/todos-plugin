@@ -51,6 +51,9 @@ public class TodosConstants {
 	/** 24x24 px icon. */
 	public static final String ICON_24PX = "/plugin/todos/icons/todos-24.png";
 
+	/** 48x48 px icon. */
+	public static final String ICON_48PX = "/plugin/todos/icons/todos-48.png";
+
 	/** Chart width. */
 	public static final int CHART_WIDTH = 500;
 

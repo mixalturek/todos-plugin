@@ -5,7 +5,7 @@
 		xmlns:f="/lib/form"
 		xmlns:i="jelly:fmt">
 
-	<t:summary icon="/plugin/todos/icons/todos-48.png">
+	<t:summary icon="${it.iconFileNameLarge}">
 		${it.summary}
 		<ul>
 		${it.summaryDetails}
