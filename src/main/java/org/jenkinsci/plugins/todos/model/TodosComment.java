@@ -53,6 +53,9 @@ public class TodosComment implements Serializable {
 	@XmlAttribute
 	private final int line;
 
+	/** The status of a diff. Optional, may be null. */
+	private transient final TodosDiffStatus diffStatus;
+
 	/**
 	 * Source code with the matching line and optionally several lines after it.
 	 */
@@ -76,6 +79,23 @@ public class TodosComment implements Serializable {
 		this.file = file;
 		this.line = line;
 		this.sourceCode = sourceCode;
+		this.diffStatus = null;
+	}
+
+	/**
+	 * Constructor for reports diff.
+	 * 
+	 * @param base
+	 *            the base comment
+	 * @param status
+	 *            the status of diff
+	 */
+	public TodosComment(TodosComment base, TodosDiffStatus status) {
+		this.pattern = base.getPattern();
+		this.file = base.getFile();
+		this.line = base.getLine();
+		this.sourceCode = base.getSourceCode();
+		this.diffStatus = status;
 	}
 
 	/**
@@ -160,5 +180,14 @@ public class TodosComment implements Serializable {
 	 */
 	public String getSourceCodeHtml() {
 		return HtmlUtils.encodeText(sourceCode, false);
+	}
+
+	/**
+	 * Get the diff status.
+	 * 
+	 * @return the status
+	 */
+	public TodosDiffStatus getDiffStatus() {
+		return diffStatus;
 	}
 }

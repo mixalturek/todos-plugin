@@ -1,0 +1,18 @@
+<j:jelly xmlns:j="jelly:core"
+		xmlns:st="jelly:stapler"
+		xmlns:d="jelly:define"
+		xmlns:l="/lib/layout"
+		xmlns:t="/lib/hudson"
+		xmlns:f="/lib/form"
+		xmlns:i="jelly:fmt"
+		xmlns:local="local">
+
+	<style type="text/css">
+		.todos-report .new { background-color: #FFC8C8; }
+		.todos-report .solved { background-color: #C8FFC8; }
+		.todos-report .unchanged { }
+		
+		.todos-report .comment-column { width: 60%; }
+		.todos-report .file-path { white-space: normal; }
+	</style>
+</j:jelly>

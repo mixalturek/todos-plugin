@@ -1,27 +1,36 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
-	xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
-	xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+<j:jelly xmlns:j="jelly:core"
+		xmlns:st="jelly:stapler"
+		xmlns:d="jelly:define"
+		xmlns:l="/lib/layout"
+		xmlns:t="/lib/hudson"
+		xmlns:f="/lib/form"
+		xmlns:i="jelly:fmt">
+
 	<l:layout norefresh="true">
 		<st:include it="${it.build}" page="sidepanel.jelly" />
 		<l:main-panel>
+		
+			<st:include page="css.jelly" />
 
 			<h1>${%TODOs Results}</h1>
 
-			<table class="pane sortable">
-				<j:set var="cachedReport" value="${it.report}"/>
+			<table class="pane sortable todos-report">
+				<j:set var="cachedReport" value="${it.reportDiff}"/>
 
 				<thead>
 					<tr>
+						<td class="pane-header">${%Status}</td>
 						<td class="pane-header">${%File}</td>
 						<td class="pane-header">${%Line}</td>
 						<td class="pane-header">${%Pattern}</td>
-						<td class="pane-header" style="width: 60%;">${%Comment}</td>
+						<td class="pane-header comment-column">${%Comment}</td>
 					</tr>
 				</thead>
 				<tbody>
 					<j:forEach var="comment" items="${cachedReport.comments}">
-					<tr>
-						<td class="pane" style="white-space: normal;">${comment.fileHtmlWrap}</td>
+					<tr class="${comment.diffStatus.css}">
+						<td class="pane">${comment.diffStatus.text}</td>
+						<td class="pane file-path">${comment.fileHtmlWrap}</td>
 						<td class="pane">${comment.line}</td>
 						<td class="pane"><pre>${comment.patternHtml}</pre></td>
 						<td class="pane"><pre>${comment.sourceCodeHtml}</pre></td>
@@ -30,7 +39,11 @@
 				</tbody>
 				<tfoot>
 					<tr class="sortbottom">
-						<td class="pane-header" colspan="4">${%Total} ${cachedReport.commentsCount} ${%comments}</td>
+						<td class="pane-header" colspan="5">
+							${%Total} ${cachedReport.commentsCount} ${%comments},
+							${cachedReport.newCommentsCount} ${%new},
+							${cachedReport.solvedCommentsCount} ${%solved}.
+						</td>
 					</tr>
 				</tfoot>
 			</table>

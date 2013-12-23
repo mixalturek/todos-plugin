@@ -65,7 +65,7 @@ public class TodosReportSummary implements Serializable {
 			builder.append(" ");
 			builder.append(Messages.Todos_ReportSummary_Comments());
 			builder.append("</a> ");
-			builder.append(Messages.Todos_ReportSummary_in());
+			builder.append(Messages.Todos_ReportSummary_In());
 			builder.append(" ");
 			builder.append(current.getNumFiles());
 
@@ -114,7 +114,7 @@ public class TodosReportSummary implements Serializable {
 				builder.append(" ");
 				builder.append(Messages.Todos_ReportSummary_Comments());
 				builder.append(" ");
-				builder.append(Messages.Todos_ReportSummary_in());
+				builder.append(Messages.Todos_ReportSummary_In());
 				builder.append(" ");
 				builder.append(currentPatternstatistics.getNumFiles());
 

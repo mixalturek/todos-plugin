@@ -60,12 +60,51 @@ public class TodosResult {
 	}
 
 	/**
-	 * Get the report.
+	 * Get diff between current and previous reports.
+	 * 
+	 * @return the report containing the diff
+	 */
+	public TodosReport getReportDiff() {
+		return getCurrentReport().diffReports(getPreviousReport());
+	}
+
+	/**
+	 * Get the current report.
 	 * 
 	 * @return the report
 	 */
-	public TodosReport getReport() {
+	private TodosReport getCurrentReport() {
+		if (build == null) {
+			return new TodosReport();
+		}
+
 		File destDir = new File(build.getRootDir(), TodosConstants.BUILD_SUBDIR);
+
+		if (!destDir.exists()) {
+			return new TodosReport();
+		}
+
+		return TodosParser.parseFiles(destDir.listFiles());
+	}
+
+	/**
+	 * Get the previous report.
+	 * 
+	 * @return the report
+	 */
+	private TodosReport getPreviousReport() {
+		if (build == null) {
+			return new TodosReport();
+		}
+
+		AbstractBuild<?, ?> previousBuild = build.getPreviousBuild();
+
+		if (previousBuild == null) {
+			return new TodosReport();
+		}
+
+		File destDir = new File(previousBuild.getRootDir(),
+				TodosConstants.BUILD_SUBDIR);
 
 		if (!destDir.exists()) {
 			return new TodosReport();

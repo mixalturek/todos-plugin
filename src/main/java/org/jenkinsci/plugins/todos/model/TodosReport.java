@@ -27,8 +27,11 @@ package org.jenkinsci.plugins.todos.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -173,6 +176,135 @@ public class TodosReport {
 		}
 
 		return new TodosReportStatistics(statistics, sourceFiles);
+	}
+
+	/**
+	 * Diff two reports.
+	 * 
+	 * @param previous
+	 *            the previous/older report
+	 * @return the newly generated report with the results
+	 */
+	public TodosReport diffReports(TodosReport previousReport) {
+		List<TodosComment> current = comments;
+		List<TodosComment> previous = new LinkedList<TodosComment>(
+				previousReport.getComments());
+		List<TodosComment> results = new LinkedList<TodosComment>();
+
+		Iterator<TodosComment> it = current.iterator();
+
+		// Exact match
+		while (it.hasNext()) {
+			TodosComment comment = it.next();
+
+			if (findAndRemoveComment(previous, comment, true)) {
+				results.add(new TodosComment(comment, TodosDiffStatus.UNCHANGED));
+				it.remove();
+			}
+		}
+
+		// Inexact match of the rest
+		for (TodosComment comment : current) {
+			if (findAndRemoveComment(previous, comment, false)) {
+				results.add(new TodosComment(comment, TodosDiffStatus.UNCHANGED));
+			} else {
+				results.add(new TodosComment(comment, TodosDiffStatus.NEW));
+			}
+		}
+
+		// Deleted comments
+		for (TodosComment comment : previous) {
+			results.add(new TodosComment(comment, TodosDiffStatus.SOLVED));
+		}
+
+		// Sort according to diff status
+		Collections.sort(results, new Comparator<TodosComment>() {
+			public int compare(TodosComment o1, TodosComment o2) {
+				return o1.getDiffStatus().ordinal()
+						- o2.getDiffStatus().ordinal();
+			}
+		});
+
+		return new TodosReport(results);
+	}
+
+	/**
+	 * Search a comment in a list of comments. Remove the comment from the list
+	 * on match.
+	 * 
+	 * @param comments
+	 *            the list of comments
+	 * @param search
+	 *            the comment to search
+	 * @param exactMatch
+	 *            if true check file, line and source code, if false check only
+	 *            file and source code
+	 * @return true if the comment was found and removed from the list
+	 */
+	private boolean findAndRemoveComment(List<TodosComment> comments,
+			TodosComment search, boolean exactMatch) {
+		Iterator<TodosComment> it = comments.iterator();
+
+		if (exactMatch) {
+			while (it.hasNext()) {
+				TodosComment comment = it.next();
+
+				if (comment.getLine() == search.getLine()
+						&& comment.getFile().equals(search.getFile())
+						&& comment.getSourceCode().equals(
+								search.getSourceCode())) {
+					it.remove();
+					return true;
+				}
+			}
+		} else {
+			while (it.hasNext()) {
+				TodosComment comment = it.next();
+
+				if (comment.getFile().equals(search.getFile())
+						&& comment.getSourceCode().equals(
+								search.getSourceCode())) {
+					it.remove();
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get number of new comments, compared to the previous report.
+	 * 
+	 * @return the number of comments
+	 */
+	public int getNewCommentsCount() {
+		int num = 0;
+
+		for (TodosComment comment : comments) {
+			if (comment.getDiffStatus() == TodosDiffStatus.NEW) {
+				++num;
+			}
+		}
+
+		return num;
+	}
+
+	/**
+	 * Get number of solved comments, compared to the previous report.
+	 * 
+	 * @return the number of comments
+	 */
+	public int getSolvedCommentsCount() {
+		int num = 0;
+
+		for (TodosComment comment : comments) {
+			if (comment.getDiffStatus() == TodosDiffStatus.SOLVED) {
+				++num;
+			}
+		}
+
+		return num;
 	}
 
 	/**
