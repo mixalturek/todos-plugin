@@ -8,7 +8,7 @@
 	<t:summary icon="/plugin/todos/icons/todos-48.png">
 		${it.summary}
 		<ul>
-		${it.details}
+		${it.summaryDetails}
 		</ul>
 	</t:summary>
 </j:jelly>

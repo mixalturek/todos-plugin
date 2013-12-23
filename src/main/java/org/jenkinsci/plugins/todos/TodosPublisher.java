@@ -47,7 +47,7 @@ import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Jenkins publisher for TODOs.
+ * Jenkins publisher for TODOs plugin.
  * 
  * @author Michal Turek
  */
@@ -55,12 +55,15 @@ public class TodosPublisher extends Recorder implements Serializable {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
-	/** Default pattern for file. */
-	private static final String DEFAULT_PATTERN = "**/todos.xml";
-
-	/** Actual pattern for file. */
+	/** Actual pattern for searching files. */
 	private final String pattern;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param pattern
+	 *            actual pattern for searching files
+	 */
 	@DataBoundConstructor
 	public TodosPublisher(String pattern) {
 		super();
@@ -72,32 +75,39 @@ public class TodosPublisher extends Recorder implements Serializable {
 		return new TodosProjectAction(project);
 	}
 
-	protected boolean canContinue(final Result result) {
+	/**
+	 * Can the plugin continue processing.
+	 * 
+	 * @param result
+	 *            the build outcome
+	 * @return true if the plugin can continue the processing, otherwise false
+	 */
+	protected boolean canContinue(Result result) {
 		return result != Result.ABORTED && result != Result.FAILURE;
 	}
 
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) {
-		FilePath workspace = build.getWorkspace();
 		PrintStream logger = listener.getLogger();
-		TodosParser parser = new TodosParser(getRealPattern(), logger);
 		TodosReportStatistics statistics = null;
 
 		try {
-			if (this.canContinue(build.getResult())) {
-				statistics = workspace.act(parser);
+			if (canContinue(build.getResult())) {
+				FilePath workspace = build.getWorkspace();
+				statistics = workspace.act(new TodosParser(getRealPattern(),
+						logger));
 			} else {
 				statistics = new TodosReportStatistics();
 			}
 		} catch (IOException e) {
 			logger.format("%s %s: Processing of input files failed",
-					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
+					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		} catch (InterruptedException e) {
 			logger.format("%s %s: Processing of input files interrupted",
-					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
+					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		}
@@ -105,16 +115,18 @@ public class TodosPublisher extends Recorder implements Serializable {
 		build.addAction(new TodosBuildAction(build, statistics));
 
 		try {
-			copyFilesToBuildDirectory(statistics.getSourceFiles(),
-					build.getRootDir(), launcher.getChannel());
+			if (statistics != null) {
+				copyFilesToBuildDirectory(statistics.getSourceFiles(),
+						build.getRootDir(), launcher.getChannel());
+			}
 		} catch (IOException e) {
 			logger.format("%s %s: Results storing failed",
-					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
+					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		} catch (InterruptedException e) {
 			logger.format("%s %s: Results storing interrupted",
-					TodosConstants.JENKINS_TODOS_PLUGIN, TodosConstants.ERROR);
+					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		}
@@ -124,14 +136,14 @@ public class TodosPublisher extends Recorder implements Serializable {
 
 	/**
 	 * Copy files to a build results directory. The copy of a file will be
-	 * stored in TodosConstants.BUILD_SUBDIR subdirectory and a hashcode of its
-	 * absolute path will be used in its name to distinguish files with the same
-	 * names from different directories.
+	 * stored in plugin's subdirectory and a hashcode of its absolute path will
+	 * be used in its name prefix to distinguish files with the same names from
+	 * different directories.
 	 * 
 	 * @param sourceFiles
 	 *            the files to copy
 	 * @param rootDir
-	 *            the root directory where build results are stored.
+	 *            the root directory where build results are stored
 	 * @param channel
 	 *            the communication channel
 	 * @throws IOException
@@ -164,18 +176,35 @@ public class TodosPublisher extends Recorder implements Serializable {
 		}
 	}
 
+	/**
+	 * Get the monitor service.
+	 * 
+	 * @see hudson.tasks.BuildStep#getRequiredMonitorService()
+	 */
 	public BuildStepMonitor getRequiredMonitorService() {
 		return BuildStepMonitor.BUILD;
 	}
 
+	/**
+	 * Get the real pattern entered by the user in the job configuration.
+	 * 
+	 * @return the pattern from the user or default pattern if no pattern is
+	 *         entered or if it is empty
+	 * @see TodosConstants#DEFAULT_FILE_SEARCH_PATTERN
+	 */
 	private String getRealPattern() {
-		if (this.getPattern() == null || this.getPattern().length() == 0) {
-			return DEFAULT_PATTERN;
+		if (pattern == null || pattern.isEmpty()) {
+			return TodosConstants.DEFAULT_FILE_SEARCH_PATTERN;
 		} else {
-			return this.getPattern();
+			return pattern;
 		}
 	}
 
+	/**
+	 * Get the pattern.
+	 * 
+	 * @return the pattern
+	 */
 	public String getPattern() {
 		return pattern;
 	}

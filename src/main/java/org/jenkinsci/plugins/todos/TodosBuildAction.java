@@ -33,7 +33,7 @@ import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
 import org.kohsuke.stapler.StaplerProxy;
 
 /**
- * TODO: Description.
+ * Build action for interaction with the user.
  * 
  * @author Michal Turek
  */
@@ -41,64 +41,110 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
+	/** The build that this object is associated to. */
 	private final AbstractBuild<?, ?> build;
+
+	/** Report statistics for this build. */
 	private final TodosReportStatistics statistics;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param build
+	 *            the build that this object is associated to
+	 * @param statistics
+	 *            report statistics for this build
+	 */
 	public TodosBuildAction(AbstractBuild<?, ?> build,
 			TodosReportStatistics statistics) {
 		this.build = build;
 		this.statistics = statistics;
 	}
 
+	/**
+	 * Get the icon.
+	 * 
+	 * @see hudson.model.Action#getIconFileName()
+	 */
 	public String getIconFileName() {
-		return "/plugin/todos/icons/todos-24.png";
+		return TodosConstants.ICON_24PX;
 	}
 
+	/**
+	 * Get the display name.
+	 * 
+	 * @see hudson.model.Action#getDisplayName()
+	 */
 	public String getDisplayName() {
-		return "TODOs";
+		return TodosConstants.PLUGIN_NAME;
 	}
 
+	/**
+	 * Get the URL for results.
+	 * 
+	 * @see hudson.model.Action#getUrlName()
+	 */
 	public String getUrlName() {
 		return TodosConstants.RESULTS_URL;
 	}
 
+	/**
+	 * Get the report summary in a HTML form.
+	 * 
+	 * @return the summary or empty string
+	 */
 	public String getSummary() {
-		String retVal = "";
-
-		if (statistics != null) {
-			retVal = TodosReportSummary.createReportSummary(statistics,
-					getPreviousStatistics());
+		if (statistics == null) {
+			return "";
 		}
 
-		return retVal;
+		return TodosReportSummary.createReportSummary(statistics,
+				getPreviousStatistics());
 	}
 
-	public String getDetails() {
-		String retVal = "";
-
-		if (statistics != null) {
-			retVal = TodosReportSummary.createReportSummaryDetails(statistics,
-					getPreviousStatistics());
+	/**
+	 * Get the report summary details in a HTML form.
+	 * 
+	 * @return the summary details or empty string
+	 */
+	public String getSummaryDetails() {
+		if (statistics == null) {
+			return "";
 		}
 
-		return retVal;
+		return TodosReportSummary.createReportSummaryDetails(statistics,
+				getPreviousStatistics());
 	}
 
+	/**
+	 * Get the statistics.
+	 * 
+	 * @return the statistics or null
+	 */
 	public TodosReportStatistics getStatistics() {
 		return statistics;
 	}
 
-	TodosReportStatistics getPreviousStatistics() {
+	/**
+	 * Get statistics of a previous build.
+	 * 
+	 * @return the statistics or null
+	 */
+	private TodosReportStatistics getPreviousStatistics() {
 		TodosBuildAction previousAction = getPreviousAction();
-		TodosReportStatistics previousStatistics = null;
 
-		if (previousAction != null) {
-			previousStatistics = previousAction.getStatistics();
+		if (previousAction == null) {
+			return null;
 		}
 
-		return previousStatistics;
+		return previousAction.getStatistics();
 	}
 
+	/**
+	 * Get the action of the previous build.
+	 * 
+	 * @return the action or null
+	 */
 	TodosBuildAction getPreviousAction() {
 		if (build != null) {
 			AbstractBuild<?, ?> previousBuild = build.getPreviousBuild();
@@ -111,10 +157,20 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 		return null;
 	}
 
+	/**
+	 * Get the associated build.
+	 * 
+	 * @return the build or null
+	 */
 	AbstractBuild<?, ?> getBuild() {
 		return build;
 	}
 
+	/**
+	 * Get the object that is responsible for processing web requests.
+	 * 
+	 * @see org.kohsuke.stapler.StaplerProxy#getTarget()
+	 */
 	public Object getTarget() {
 		return new TodosResult(build);
 	}

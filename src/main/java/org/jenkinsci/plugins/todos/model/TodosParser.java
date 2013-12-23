@@ -87,7 +87,7 @@ public class TodosParser implements
 
 		if (files.length == 0) {
 			logger.format("%s %s: No file if matching the input pattern: %s\n",
-					TodosConstants.JENKINS_TODOS_PLUGIN,
+					TodosConstants.PLUGIN_LOG_PREFIX,
 					TodosConstants.WARNING, filePattern);
 			return new TodosReportStatistics();
 		}
@@ -155,7 +155,7 @@ public class TodosParser implements
 		if (!file.exists()) {
 			if (logger != null) {
 				logger.format("%s %s: File does not exist: %s\n",
-						TodosConstants.JENKINS_TODOS_PLUGIN,
+						TodosConstants.PLUGIN_LOG_PREFIX,
 						TodosConstants.WARNING, file.getAbsolutePath());
 			}
 
@@ -164,7 +164,7 @@ public class TodosParser implements
 			if (logger != null) {
 				logger.format(
 						"%s %s: File is not readable, check permissions: %s\n",
-						TodosConstants.JENKINS_TODOS_PLUGIN,
+						TodosConstants.PLUGIN_LOG_PREFIX,
 						TodosConstants.WARNING, file.getAbsolutePath());
 			}
 
@@ -173,7 +173,7 @@ public class TodosParser implements
 
 		if (logger != null) {
 			logger.format("%s Processing file: %s\n",
-					TodosConstants.JENKINS_TODOS_PLUGIN, file.getAbsolutePath());
+					TodosConstants.PLUGIN_LOG_PREFIX, file.getAbsolutePath());
 		}
 
 		// The constant is not available in this version of Java
@@ -211,7 +211,7 @@ public class TodosParser implements
 		} catch (BuildException e) {
 			logger.format(
 					"%s %s: Searching files mathing input pattern failed: %s\n",
-					TodosConstants.JENKINS_TODOS_PLUGIN,
+					TodosConstants.PLUGIN_LOG_PREFIX,
 					TodosConstants.WARNING, pattern);
 			e.printStackTrace(logger);
 			return new String[0];

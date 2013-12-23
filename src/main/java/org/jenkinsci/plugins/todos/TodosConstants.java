@@ -30,8 +30,11 @@ package org.jenkinsci.plugins.todos;
  * @author Michal Turek
  */
 public class TodosConstants {
+	/** The plugin name. */
+	public static final String PLUGIN_NAME = "TODOs";
+
 	/** String for build log to identify the messages from this plugin. */
-	public static final String JENKINS_TODOS_PLUGIN = "[TODOs Plugin]";
+	public static final String PLUGIN_LOG_PREFIX = "[TODOs Plugin]";
 
 	/** String specifying a warning message. */
 	public static final String WARNING = "WARNING";
@@ -44,4 +47,16 @@ public class TodosConstants {
 
 	/** Results page URL. */
 	public static final String RESULTS_URL = "todosResult";
+
+	/** 24x24 px icon. */
+	public static final String ICON_24PX = "/plugin/todos/icons/todos-24.png";
+
+	/** Chart width. */
+	public static final int CHART_WIDTH = 500;
+
+	/** Chart height. */
+	public static final int CHART_HEIGHT = 200;
+
+	/** Default pattern for file. */
+	public static final String DEFAULT_FILE_SEARCH_PATTERN = "**/todos.xml";
 }

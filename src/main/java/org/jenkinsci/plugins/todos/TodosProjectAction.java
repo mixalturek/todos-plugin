@@ -36,7 +36,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 /**
- * TODO: Description.
+ * Project action for interaction with the user.
  * 
  * @author Michal Turek
  */
@@ -44,29 +44,47 @@ public class TodosProjectAction implements Action, Serializable {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
-	public static final int CHART_WIDTH = 500;
-	public static final int CHART_HEIGHT = 200;
-
+	/** The associated project. */
 	public AbstractProject<?, ?> project;
 
-	public TodosProjectAction(final AbstractProject<?, ?> project) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param project
+	 *            the associated project
+	 */
+	public TodosProjectAction(AbstractProject<?, ?> project) {
 		this.project = project;
 	}
 
+	/**
+	 * Get the icon.
+	 * 
+	 * @see hudson.model.Action#getIconFileName()
+	 */
 	public String getIconFileName() {
-		return "/plugin/todos/icons/todos-24.png";
+		return TodosConstants.ICON_24PX;
 	}
 
+	/**
+	 * Get the display name.
+	 * 
+	 * @see hudson.model.Action#getDisplayName()
+	 */
 	public String getDisplayName() {
 		return Messages.Todos_ProjectAction_Name();
 	}
 
+	/**
+	 * Get the URL for results.
+	 * 
+	 * @see hudson.model.Action#getUrlName()
+	 */
 	public String getUrlName() {
 		return TodosConstants.RESULTS_URL;
 	}
 
 	/**
-	 * 
 	 * Redirects the index page to the last result.
 	 * 
 	 * @param request
@@ -76,58 +94,69 @@ public class TodosProjectAction implements Action, Serializable {
 	 * @throws IOException
 	 *             in case of an error
 	 */
-	public void doIndex(final StaplerRequest request,
-			final StaplerResponse response) throws IOException {
+	public void doIndex(StaplerRequest request, StaplerResponse response)
+			throws IOException {
 		AbstractBuild<?, ?> build = getLastFinishedBuild();
-		if (build != null) {
-			response.sendRedirect2(String.format("../%d/%s", build.getNumber(),
-					TodosConstants.RESULTS_URL));
+
+		if (build == null) {
+			return;
 		}
+
+		response.sendRedirect2(String.format("../%d/%s", build.getNumber(),
+				TodosConstants.RESULTS_URL));
 	}
 
 	/**
 	 * Returns the last finished build.
 	 * 
-	 * @return the last finished build or <code>null</code> if there is no such
-	 *         build
+	 * @return the last finished build or null if there is no such build
 	 */
 	public AbstractBuild<?, ?> getLastFinishedBuild() {
 		AbstractBuild<?, ?> lastBuild = project.getLastBuild();
+
 		while (lastBuild != null
 				&& (lastBuild.isBuilding() || lastBuild
 						.getAction(TodosBuildAction.class) == null)) {
 			lastBuild = lastBuild.getPreviousBuild();
 		}
+
 		return lastBuild;
 	}
 
+	/**
+	 * Check that the project has valid build results.
+	 * 
+	 * @return true if the project has at least two valid results, otherwise
+	 *         false
+	 */
 	public final boolean hasValidResults() {
 		AbstractBuild<?, ?> build = getLastFinishedBuild();
 
-		if (build != null) {
-			TodosBuildAction action = build.getAction(TodosBuildAction.class);
+		if (build == null) {
+			return false;
+		}
 
-			int numResults = 0;
+		TodosBuildAction action = build.getAction(TodosBuildAction.class);
 
-			while (action != null) {
-				if (action.getStatistics() != null) {
-					++numResults;
+		int numResults = 0;
 
-					if (numResults > 1) {
-						return true;
-					}
+		while (action != null) {
+			if (action.getStatistics() != null) {
+				++numResults;
+
+				if (numResults > 1) {
+					return true;
 				}
-
-				action = action.getPreviousAction();
 			}
+
+			action = action.getPreviousAction();
 		}
 
 		return false;
 	}
 
 	/**
-	 * Display the trend map. Delegates to the the associated
-	 * {@link ResultAction}.
+	 * Display the trend map.
 	 * 
 	 * @param request
 	 *            Stapler request
@@ -136,37 +165,53 @@ public class TodosProjectAction implements Action, Serializable {
 	 * @throws IOException
 	 *             in case of an error
 	 */
-	public void doTrendMap(final StaplerRequest request,
-			final StaplerResponse response) throws IOException {
+	public void doTrendMap(StaplerRequest request, StaplerResponse response)
+			throws IOException {
 		AbstractBuild<?, ?> lastBuild = this.getLastFinishedBuild();
+
+		if (lastBuild == null) {
+			return;
+		}
+
 		TodosBuildAction lastAction = lastBuild
 				.getAction(TodosBuildAction.class);
 
+		if (lastAction == null) {
+			return;
+		}
+
 		ChartUtil.generateClickableMap(request, response,
-				TodosChartBuilder.buildChart(lastAction), CHART_WIDTH,
-				CHART_HEIGHT);
+				TodosChartBuilder.buildChart(lastAction),
+				TodosConstants.CHART_WIDTH, TodosConstants.CHART_HEIGHT);
 	}
 
 	/**
-	 * Display the trend graph. Delegates to the the associated
-	 * {@link ResultAction}.
+	 * Display the trend graph.
 	 * 
 	 * @param request
 	 *            Stapler request
 	 * @param response
 	 *            Stapler response
 	 * @throws IOException
-	 *             in case of an error in
-	 *             {@link ResultAction#doGraph(StaplerRequest, StaplerResponse, int)}
+	 *             in case of an error
 	 */
-	public void doTrend(final StaplerRequest request,
-			final StaplerResponse response) throws IOException {
+	public void doTrend(StaplerRequest request, StaplerResponse response)
+			throws IOException {
 		AbstractBuild<?, ?> lastBuild = this.getLastFinishedBuild();
+
+		if (lastBuild == null) {
+			return;
+		}
+
 		TodosBuildAction lastAction = lastBuild
 				.getAction(TodosBuildAction.class);
 
+		if (lastAction == null) {
+			return;
+		}
+
 		ChartUtil.generateGraph(request, response,
-				TodosChartBuilder.buildChart(lastAction), CHART_WIDTH,
-				CHART_HEIGHT);
+				TodosChartBuilder.buildChart(lastAction),
+				TodosConstants.CHART_WIDTH, TodosConstants.CHART_HEIGHT);
 	}
 }

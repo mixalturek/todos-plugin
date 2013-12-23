@@ -37,6 +37,9 @@ import hudson.tasks.Publisher;
  */
 @Extension
 public class TodosDescriptor extends BuildStepDescriptor<Publisher> {
+	/**
+	 * Constructor.
+	 */
 	public TodosDescriptor() {
 		super(TodosPublisher.class);
 	}
@@ -44,6 +47,7 @@ public class TodosDescriptor extends BuildStepDescriptor<Publisher> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+		// The plugin is applicable for all job types
 		return true;
 	}
 
