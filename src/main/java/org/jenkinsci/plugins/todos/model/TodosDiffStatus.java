@@ -46,7 +46,7 @@ public enum TodosDiffStatus {
 
 		@Override
 		public String getText() {
-			return Messages.Diff_Status_New();
+			return Messages.Todos_DiffStatus_New();
 		}
 	},
 
@@ -59,7 +59,7 @@ public enum TodosDiffStatus {
 
 		@Override
 		public String getText() {
-			return Messages.Diff_Status_Solved();
+			return Messages.Todos_DiffStatus_Solved();
 		}
 	},
 
@@ -72,7 +72,7 @@ public enum TodosDiffStatus {
 
 		@Override
 		public String getText() {
-			return Messages.Diff_Status_Unchanged();
+			return Messages.Todos_DiffStatus_Unchanged();
 		}
 	};
 

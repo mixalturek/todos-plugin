@@ -95,6 +95,17 @@ run:
 
 
 ###############################################################################
+#### Search missing translations
+
+# https://wiki.jenkins-ci.org/display/JENKINS/Internationalization
+
+.PHONY: locale
+locale: 
+	mvn stapler:i18n -Dlocale=cs
+	mvn stapler:i18n -Dlocale=ru
+
+
+###############################################################################
 #### Package
 
 .PHONY: package

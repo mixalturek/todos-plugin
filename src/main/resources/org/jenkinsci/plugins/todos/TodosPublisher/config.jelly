@@ -6,8 +6,7 @@
 		xmlns:f="/lib/form"
 		xmlns:u="/util">
 		
-	<f:entry title="${%TODOs reports}"
-           description="${%description.pattern('http://ant.apache.org/manual/Types/fileset.html')}">
+	<f:entry title="${%TODOs reports}" description="${%description.pattern('http://ant.apache.org/manual/Types/fileset.html')}">
 		<f:textbox name="pattern" value="${instance.pattern}"/>
 	</f:entry>
 </j:jelly>

@@ -72,7 +72,7 @@ public class TodosProjectAction implements Action, Serializable {
 	 * @see hudson.model.Action#getDisplayName()
 	 */
 	public String getDisplayName() {
-		return Messages.Todos_ProjectAction_Name();
+		return TodosConstants.PLUGIN_NAME;
 	}
 
 	/**

@@ -52,30 +52,21 @@ public class TodosReportSummary implements Serializable {
 		StringBuilder builder = new StringBuilder();
 
 		if (current != null) {
-			builder.append("<a href=\"");
-			builder.append(TodosConstants.RESULTS_URL);
-			builder.append("\">");
-			builder.append(current.getNumComments());
+			String commentsDiff = "";
+			String filesDiff = "";
 
 			if (previous != null) {
-				printDifference(current.getNumComments(),
-						previous.getNumComments(), builder);
+				commentsDiff = getDifference(current.getNumComments(),
+						previous.getNumComments());
+				filesDiff = getDifference(current.getNumFiles(),
+						previous.getNumFiles());
 			}
 
+			builder.append(Messages.comments_in_files(current.getNumComments(),
+					commentsDiff, current.getNumFiles(), filesDiff));
 			builder.append(" ");
-			builder.append(Messages.Todos_ReportSummary_Comments());
-			builder.append("</a> ");
-			builder.append(Messages.Todos_ReportSummary_In());
-			builder.append(" ");
-			builder.append(current.getNumFiles());
-
-			if (previous != null) {
-				printDifference(current.getNumFiles(), previous.getNumFiles(),
-						builder);
-			}
-
-			builder.append(" ");
-			builder.append(Messages.Todos_ReportSummary_Files());
+			builder.append(Messages
+					.Todos_ReportSummary_ShowDetails(TodosConstants.RESULTS_URL));
 			builder.append(".");
 		}
 
@@ -98,36 +89,28 @@ public class TodosReportSummary implements Serializable {
 		if (current != null) {
 			for (TodosPatternStatistics currentPatternstatistics : current
 					.getPatternStatistics()) {
-				builder.append("<li><pre style=\"display: inline;\">");
-				builder.append(currentPatternstatistics.getPatternHtml());
-				builder.append("</pre>: ");
-				builder.append(currentPatternstatistics.getNumOccurrences());
+				String commentsDiff = "";
+				String filesDiff = "";
 
 				if (previous != null) {
-					printDifference(
+					commentsDiff = getDifference(
 							currentPatternstatistics.getNumOccurrences(),
 							previous.getPatternStatistics(
 									currentPatternstatistics.getPattern())
-									.getNumOccurrences(), builder);
-				}
-
-				builder.append(" ");
-				builder.append(Messages.Todos_ReportSummary_Comments());
-				builder.append(" ");
-				builder.append(Messages.Todos_ReportSummary_In());
-				builder.append(" ");
-				builder.append(currentPatternstatistics.getNumFiles());
-
-				if (previous != null) {
-					printDifference(
+									.getNumOccurrences());
+					filesDiff = getDifference(
 							currentPatternstatistics.getNumFiles(),
 							previous.getPatternStatistics(
 									currentPatternstatistics.getPattern())
-									.getNumFiles(), builder);
+									.getNumFiles());
 				}
 
-				builder.append(" ");
-				builder.append(Messages.Todos_ReportSummary_Files());
+				builder.append("<li><pre style=\"display: inline;\">");
+				builder.append(currentPatternstatistics.getPatternHtml());
+				builder.append("</pre>: ");
+				builder.append(Messages.comments_in_files(
+						current.getNumComments(), commentsDiff,
+						current.getNumFiles(), filesDiff));
 				builder.append(".</li>");
 			}
 		}
@@ -136,26 +119,22 @@ public class TodosReportSummary implements Serializable {
 	}
 
 	/**
-	 * Print the formatted difference of two integers.
+	 * Get the formatted difference of two integers.
 	 * 
 	 * @param current
 	 *            current value
 	 * @param previous
 	 *            previous value
-	 * @param builder
-	 *            string builder for output
 	 */
-	private static void printDifference(int current, int previous,
-			StringBuilder builder) {
+	private static String getDifference(int current, int previous) {
 		int difference = current - previous;
 
 		if (difference == 0) {
-			return;
+			return "";
 		}
 
 		// Minus sign is part of the difference variable (negative number)
-		builder.append((difference > 0) ? " (+" : " (");
-		builder.append(difference);
-		builder.append(")");
+		return ((difference > 0) ? " (+" : " (") + String.valueOf(difference)
+				+ ")";
 	}
 }

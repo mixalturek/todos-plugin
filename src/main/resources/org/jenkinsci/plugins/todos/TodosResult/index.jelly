@@ -40,9 +40,7 @@
 				<tfoot>
 					<tr class="sortbottom">
 						<td class="pane-header" colspan="5">
-							${%Total} ${cachedReport.commentsCount} ${%comments},
-							${cachedReport.newCommentsCount} ${%new},
-							${cachedReport.solvedCommentsCount} ${%solved}.
+							${%total.new.solved(cachedReport.commentsCount, cachedReport.newCommentsCount, cachedReport.solvedCommentsCount)}
 						</td>
 					</tr>
 				</tfoot>
