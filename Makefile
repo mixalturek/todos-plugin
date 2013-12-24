@@ -1,4 +1,4 @@
-# 
+#
 # The MIT License (MIT)
 #
 # Copyright (c) 2013 Michal Turek
@@ -98,9 +98,10 @@ run:
 #### Search missing translations
 
 # https://wiki.jenkins-ci.org/display/JENKINS/Internationalization
+# native2ascii
 
 .PHONY: locale
-locale: 
+locale:
 	mvn stapler:i18n -Dlocale=cs
 	mvn stapler:i18n -Dlocale=ru
 
