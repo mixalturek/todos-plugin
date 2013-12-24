@@ -36,9 +36,6 @@ public class TodosConstants {
 	/** String for build log to identify the messages from this plugin. */
 	public static final String PLUGIN_LOG_PREFIX = "[TODOs Plugin]";
 
-	/** String specifying a warning message. */
-	public static final String WARNING = "WARNING";
-
 	/** String specifying an error message. */
 	public static final String ERROR = "ERROR";
 

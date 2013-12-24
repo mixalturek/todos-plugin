@@ -43,7 +43,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.jenkinsci.plugins.todos.model.TodosParser;
-import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
+import org.jenkinsci.plugins.todos.model.TodosReport;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -90,45 +90,50 @@ public class TodosPublisher extends Recorder implements Serializable {
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) {
 		PrintStream logger = listener.getLogger();
-		TodosReportStatistics statistics = null;
+		TodosReport report = null;
+
+		logger.format("%s Starting results publication\n",
+				TodosConstants.PLUGIN_LOG_PREFIX);
 
 		try {
 			if (canContinue(build.getResult())) {
 				FilePath workspace = build.getWorkspace();
-				statistics = workspace.act(new TodosParser(getRealPattern(),
-						logger));
+				report = workspace.act(new TodosParser(getRealPattern()));
 			} else {
-				statistics = new TodosReportStatistics();
+				report = new TodosReport();
 			}
 		} catch (IOException e) {
-			logger.format("%s %s: Processing of input files failed",
+			logger.format("%s %s: Processing of report files failed\n",
 					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		} catch (InterruptedException e) {
-			logger.format("%s %s: Processing of input files interrupted",
+			logger.format("%s %s: Processing of report files interrupted\n",
 					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		}
 
-		build.addAction(new TodosBuildAction(build, statistics));
+		build.addAction(new TodosBuildAction(build, report.getStatistics()));
 
 		try {
-			if (statistics != null) {
-				copyFilesToBuildDirectory(statistics.getSourceFiles(),
-						build.getRootDir(), launcher.getChannel());
-			}
+			copyFilesToBuildDirectory(report.getSourceFiles(),
+					build.getRootDir(), launcher.getChannel());
 		} catch (IOException e) {
-			logger.format("%s %s: Results storing failed",
+			logger.format("%s %s: Results storing failed\n",
 					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
 		} catch (InterruptedException e) {
-			logger.format("%s %s: Results storing interrupted",
+			logger.format("%s %s: Results storing interrupted\n",
 					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
 			e.printStackTrace(logger);
 			return false;
+		}
+
+		for (File file : report.getSourceFiles()) {
+			logger.format("%s Report file successfully processed: %s\n",
+					TodosConstants.PLUGIN_LOG_PREFIX, file.getAbsolutePath());
 		}
 
 		return true;

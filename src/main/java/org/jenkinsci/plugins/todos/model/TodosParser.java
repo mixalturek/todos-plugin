@@ -29,10 +29,6 @@ import hudson.remoting.VirtualChannel;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -43,7 +39,6 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
-import org.jenkinsci.plugins.todos.TodosConstants;
 import org.xml.sax.SAXException;
 
 /**
@@ -51,28 +46,21 @@ import org.xml.sax.SAXException;
  * 
  * @author Michal Turek
  */
-public class TodosParser implements
-		FilePath.FileCallable<TodosReportStatistics> {
+public class TodosParser implements FilePath.FileCallable<TodosReport> {
 	/** Serial version UID. */
 	private static final long serialVersionUID = 0;
 
 	/** Pattern for searching the input files. */
 	private final String filePattern;
 
-	/** Logger for output messages to build log. */
-	private final PrintStream logger;
-
 	/**
 	 * Constructor initializing members.
 	 * 
 	 * @param filePattern
 	 *            pattern for searching the input files
-	 * @param logger
-	 *            logger for output messages to build log
 	 */
-	public TodosParser(String filePattern, PrintStream logger) {
+	public TodosParser(String filePattern) {
 		this.filePattern = filePattern;
-		this.logger = logger;
 	}
 
 	/**
@@ -81,25 +69,21 @@ public class TodosParser implements
 	 * @see hudson.FilePath.FileCallable#invoke(java.io.File,
 	 *      hudson.remoting.VirtualChannel)
 	 */
-	public TodosReportStatistics invoke(File workspace, VirtualChannel channel)
+	public TodosReport invoke(File workspace, VirtualChannel channel)
 			throws IOException {
 		String[] files = findFiles(workspace, filePattern);
 
 		if (files.length == 0) {
-			logger.format("%s %s: No file if matching the input pattern: %s\n",
-					TodosConstants.PLUGIN_LOG_PREFIX,
-					TodosConstants.WARNING, filePattern);
-			return new TodosReportStatistics();
+			throw new IOException("No file is matching the input pattern: "
+					+ filePattern);
 		}
 
 		TodosReport report = new TodosReport();
-		Set<File> paths = new HashSet<File>();
 
 		for (String filename : files) {
 			try {
 				File inputFile = new File(workspace, filename);
-				report = report.concatenate(parse(inputFile, logger));
-				paths.add(inputFile);
+				report = report.concatenate(parse(inputFile), inputFile);
 			} catch (SAXException e) {
 				throw new IOException("Parsing failed: " + filename + ", "
 						+ findExceptionMessage(e), e);
@@ -109,7 +93,7 @@ public class TodosParser implements
 			}
 		}
 
-		return report.getStatistics(new ArrayList<File>(paths));
+		return report;
 	}
 
 	/**
@@ -124,11 +108,14 @@ public class TodosParser implements
 
 		for (File file : files) {
 			try {
-				report = report.concatenate(parse(file, null));
+				report = report.concatenate(parse(file));
 			} catch (SAXException e) {
 				// Silently ignore, there is still a possibility that other
 				// files can be parsed successfully
 			} catch (JAXBException e) {
+				// Silently ignore, there is still a possibility that other
+				// files can be parsed successfully
+			} catch (IOException e) {
 				// Silently ignore, there is still a possibility that other
 				// files can be parsed successfully
 			}
@@ -142,38 +129,22 @@ public class TodosParser implements
 	 * 
 	 * @param file
 	 *            the file to be parsed
-	 * @param logger
-	 *            optional logger to report errors, can be null
 	 * @return the content of the parsed file in form of a report
 	 * @throws SAXException
-	 *             if a XML related error occur
+	 *             if a XML related error occurs
 	 * @throws JAXBException
-	 *             if a XML related error occur
+	 *             if a XML related error occurs
+	 * @throws IOException
+	 *             if an IO related error occurs
 	 */
-	private static TodosReport parse(File file, PrintStream logger)
-			throws SAXException, JAXBException {
+	private static TodosReport parse(File file) throws SAXException,
+			JAXBException, IOException {
 		if (!file.exists()) {
-			if (logger != null) {
-				logger.format("%s %s: File does not exist: %s\n",
-						TodosConstants.PLUGIN_LOG_PREFIX,
-						TodosConstants.WARNING, file.getAbsolutePath());
-			}
-
-			return new TodosReport();
+			throw new IOException("File does not exist: "
+					+ file.getAbsolutePath());
 		} else if (!file.isFile() || !file.canRead()) {
-			if (logger != null) {
-				logger.format(
-						"%s %s: File is not readable, check permissions: %s\n",
-						TodosConstants.PLUGIN_LOG_PREFIX,
-						TodosConstants.WARNING, file.getAbsolutePath());
-			}
-
-			return new TodosReport();
-		}
-
-		if (logger != null) {
-			logger.format("%s Processing file: %s\n",
-					TodosConstants.PLUGIN_LOG_PREFIX, file.getAbsolutePath());
+			throw new IOException("File is not readable, check permissions: "
+					+ file.getAbsolutePath());
 		}
 
 		// The constant is not available in this version of Java
@@ -198,8 +169,11 @@ public class TodosParser implements
 	 * @param workspace
 	 *            root directory of the workspace
 	 * @return the filenames of all found files
+	 * @throws IOException
+	 *             if something fails
 	 */
-	private String[] findFiles(File workspace, String pattern) {
+	private String[] findFiles(File workspace, String pattern)
+			throws IOException {
 		try {
 			FileSet fileSet = new FileSet();
 			Project antProject = new Project();
@@ -209,12 +183,9 @@ public class TodosParser implements
 
 			return fileSet.getDirectoryScanner(antProject).getIncludedFiles();
 		} catch (BuildException e) {
-			logger.format(
-					"%s %s: Searching files mathing input pattern failed: %s\n",
-					TodosConstants.PLUGIN_LOG_PREFIX,
-					TodosConstants.WARNING, pattern);
-			e.printStackTrace(logger);
-			return new String[0];
+			throw new IOException(
+					"Searching files mathing input pattern failed: " + pattern,
+					e);
 		}
 	}
 

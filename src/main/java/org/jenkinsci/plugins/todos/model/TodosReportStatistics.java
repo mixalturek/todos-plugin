@@ -24,7 +24,6 @@
  */
 package org.jenkinsci.plugins.todos.model;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,14 +41,11 @@ public class TodosReportStatistics implements Serializable {
 	/** Statistics per patterns. */
 	private final List<TodosPatternStatistics> patternStatistics;
 
-	/** The list of files from which the original report was created. */
-	private final transient List<File> sourceFiles;
-
 	/**
 	 * Helper constructor to create an empty instance.
 	 */
 	public TodosReportStatistics() {
-		this(new ArrayList<TodosPatternStatistics>(), new ArrayList<File>());
+		this(new ArrayList<TodosPatternStatistics>());
 	}
 
 	/**
@@ -57,24 +53,10 @@ public class TodosReportStatistics implements Serializable {
 	 * 
 	 * @param patternStatistics
 	 *            statistics per patterns
-	 * @param sourceFiles
-	 *            the list of files from which the original report was created
 	 */
-	public TodosReportStatistics(
-			List<TodosPatternStatistics> patternStatistics,
-			List<File> sourceFiles) {
+	public TodosReportStatistics(List<TodosPatternStatistics> patternStatistics) {
 		this.patternStatistics = new ArrayList<TodosPatternStatistics>(
 				patternStatistics);
-		this.sourceFiles = new ArrayList<File>(sourceFiles);
-	}
-
-	/**
-	 * Get list of files from which the original report was created.
-	 * 
-	 * @return unmodifiable list with files
-	 */
-	public List<File> getSourceFiles() {
-		return Collections.unmodifiableList(sourceFiles);
 	}
 
 	/**

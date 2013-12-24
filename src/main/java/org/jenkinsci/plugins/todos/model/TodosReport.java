@@ -25,6 +25,7 @@
 package org.jenkinsci.plugins.todos.model;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -49,7 +50,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(namespace = "http://todos.sourceforge.net", name = "comments")
-public class TodosReport {
+public class TodosReport implements Serializable {
 	/** All comments that were found. */
 	@XmlElement(namespace = "http://todos.sourceforge.net", name = "comment", type = TodosComment.class)
 	private final List<TodosComment> comments;
@@ -58,11 +59,15 @@ public class TodosReport {
 	@XmlAttribute
 	private final String version;
 
+	/** The list of files from which the original report was created. */
+	private final List<File> sourceFiles;
+
 	/**
 	 * Helper constructor to create an empty instance.
 	 */
 	public TodosReport() {
-		this(Collections.<TodosComment> emptyList(), "");
+		this(Collections.<TodosComment> emptyList(), Collections
+				.<File> emptyList(), "");
 	}
 
 	/**
@@ -72,7 +77,7 @@ public class TodosReport {
 	 *            all comments that were found
 	 */
 	public TodosReport(List<TodosComment> comments) {
-		this(comments, "");
+		this(comments, Collections.<File> emptyList(), "");
 	}
 
 	/**
@@ -80,11 +85,15 @@ public class TodosReport {
 	 * 
 	 * @param comments
 	 *            all comments that were found
+	 * @param sourceFiles
+	 *            the list of files from which the original report was created
 	 * @param version
 	 *            the version of the file format if loaded from a file
 	 */
-	private TodosReport(List<TodosComment> comments, String version) {
+	private TodosReport(List<TodosComment> comments, List<File> sourceFiles,
+			String version) {
 		this.comments = new ArrayList<TodosComment>(comments);
+		this.sourceFiles = new ArrayList<File>(sourceFiles);
 		this.version = version;
 	}
 
@@ -102,16 +111,34 @@ public class TodosReport {
 	 * 
 	 * @param report
 	 *            the report to concatenate with this one
+	 * @param inputFile
+	 *            the file from which the original report was created
+	 * @return a new report that contains items from this instance followed by
+	 *         items from the instance passed in the parameter
+	 */
+	public TodosReport concatenate(TodosReport report, File inputFile) {
+		String version = (!this.version.isEmpty()) ? this.version
+				: report.version;
+
+		List<TodosComment> commentsList = new ArrayList<TodosComment>(comments);
+		commentsList.addAll(report.getComments());
+
+		List<File> filesList = new ArrayList<File>(sourceFiles);
+		filesList.add(inputFile);
+
+		return new TodosReport(commentsList, filesList, version);
+	}
+
+	/**
+	 * Concatenate two reports.
+	 * 
+	 * @param report
+	 *            the report to concatenate with this one
 	 * @return a new report that contains items from this instance followed by
 	 *         items from the instance passed in the parameter
 	 */
 	public TodosReport concatenate(TodosReport report) {
-		String version = (!this.version.isEmpty()) ? this.version
-				: report.version;
-
-		List<TodosComment> tmpList = new ArrayList<TodosComment>(comments);
-		tmpList.addAll(report.getComments());
-		return new TodosReport(tmpList, version);
+		return concatenate(report, new File(""));
 	}
 
 	/**
@@ -124,13 +151,20 @@ public class TodosReport {
 	}
 
 	/**
+	 * Get list of files from which the original report was created.
+	 * 
+	 * @return unmodifiable list with files
+	 */
+	public List<File> getSourceFiles() {
+		return Collections.unmodifiableList(sourceFiles);
+	}
+
+	/**
 	 * Get the statistics for this report.
 	 * 
-	 * @param sourceFiles
-	 *            the list of files from which the original report was created
 	 * @return the statistics
 	 */
-	public TodosReportStatistics getStatistics(List<File> sourceFiles) {
+	public TodosReportStatistics getStatistics() {
 		Set<String> filesWithComments = new HashSet<String>();
 		Map<String, PatternStatistics> patternStatistics = new HashMap<String, PatternStatistics>();
 
@@ -150,7 +184,7 @@ public class TodosReport {
 			}
 		}
 
-		return convertStatistics(patternStatistics, sourceFiles);
+		return convertStatistics(patternStatistics);
 	}
 
 	/**
@@ -158,13 +192,10 @@ public class TodosReport {
 	 * 
 	 * @param sourceStatistics
 	 *            the source statistics
-	 * @param sourceFiles
-	 *            the list of files from which the original report was created
 	 * @return the statistics
 	 */
 	private TodosReportStatistics convertStatistics(
-			Map<String, PatternStatistics> sourceStatistics,
-			List<File> sourceFiles) {
+			Map<String, PatternStatistics> sourceStatistics) {
 		List<TodosPatternStatistics> statistics = new ArrayList<TodosPatternStatistics>(
 				sourceStatistics.size());
 
@@ -175,7 +206,7 @@ public class TodosReport {
 					entry.getValue().filesWithComment.size()));
 		}
 
-		return new TodosReportStatistics(statistics, sourceFiles);
+		return new TodosReportStatistics(statistics);
 	}
 
 	/**
