@@ -150,17 +150,26 @@ public class TodosBuildAction implements Action, Serializable, StaplerProxy {
 	}
 
 	/**
-	 * Get the action of the previous build.
+	 * Get the previous valid action.
 	 * 
 	 * @return the action or null
 	 */
 	TodosBuildAction getPreviousAction() {
-		if (build != null) {
-			AbstractBuild<?, ?> previousBuild = build.getPreviousBuild();
+		if (build == null) {
+			return null;
+		}
 
-			if (previousBuild != null) {
-				return previousBuild.getAction(TodosBuildAction.class);
+		AbstractBuild<?, ?> previousBuild = build.getPreviousBuild();
+
+		while (previousBuild != null) {
+			TodosBuildAction action = previousBuild
+					.getAction(TodosBuildAction.class);
+
+			if (action != null) {
+				return action;
 			}
+
+			previousBuild = previousBuild.getPreviousBuild();
 		}
 
 		return null;

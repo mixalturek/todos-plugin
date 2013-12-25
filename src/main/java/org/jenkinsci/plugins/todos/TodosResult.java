@@ -88,7 +88,7 @@ public class TodosResult {
 	}
 
 	/**
-	 * Get the previous report.
+	 * Get the previous valid report.
 	 * 
 	 * @return the report, empty report or null
 	 */
@@ -99,17 +99,17 @@ public class TodosResult {
 
 		AbstractBuild<?, ?> previousBuild = build.getPreviousBuild();
 
-		if (previousBuild == null) {
-			return new TodosReport();
+		while (previousBuild != null) {
+			File destDir = new File(previousBuild.getRootDir(),
+					TodosConstants.BUILD_SUBDIR);
+
+			if (destDir.exists()) {
+				return TodosParser.parseFiles(destDir.listFiles());
+			}
+
+			previousBuild = previousBuild.getPreviousBuild();
 		}
 
-		File destDir = new File(previousBuild.getRootDir(),
-				TodosConstants.BUILD_SUBDIR);
-
-		if (!destDir.exists()) {
-			return null;
-		}
-
-		return TodosParser.parseFiles(destDir.listFiles());
+		return null;
 	}
 }
