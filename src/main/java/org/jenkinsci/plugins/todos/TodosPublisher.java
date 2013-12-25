@@ -98,9 +98,6 @@ public class TodosPublisher extends Recorder implements Serializable {
 			return true;
 		}
 
-		logger.format("%s Starting results publication\n",
-				TodosConstants.PLUGIN_LOG_PREFIX);
-
 		TodosReport report = null;
 
 		try {
@@ -136,7 +133,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 		}
 
 		for (File file : report.getSourceFiles()) {
-			logger.format("%s Report file successfully processed: %s\n",
+			logger.format("%s Report successfully processed: %s\n",
 					TodosConstants.PLUGIN_LOG_PREFIX, file.getAbsolutePath());
 		}
 

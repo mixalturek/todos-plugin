@@ -109,8 +109,9 @@ public class TodosReportSummary implements Serializable {
 				builder.append(currentPatternstatistics.getPatternHtml());
 				builder.append("</pre>: ");
 				builder.append(Messages.comments_in_files(
-						current.getNumComments(), commentsDiff,
-						current.getNumFiles(), filesDiff));
+						currentPatternstatistics.getNumOccurrences(),
+						commentsDiff, currentPatternstatistics.getNumFiles(),
+						filesDiff));
 				builder.append(".</li>");
 			}
 		}
