@@ -217,6 +217,10 @@ public class TodosReport implements Serializable {
 	 * @return the newly generated report with the results
 	 */
 	public TodosReport diffReports(TodosReport previousReport) {
+		if (previousReport == null) {
+			return this;
+		}
+
 		List<TodosComment> current = comments;
 		List<TodosComment> previous = new LinkedList<TodosComment>(
 				previousReport.getComments());

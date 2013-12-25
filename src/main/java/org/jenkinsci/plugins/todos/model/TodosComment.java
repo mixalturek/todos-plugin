@@ -79,7 +79,7 @@ public class TodosComment implements Serializable {
 		this.file = file;
 		this.line = line;
 		this.sourceCode = sourceCode;
-		this.diffStatus = null;
+		this.diffStatus = TodosDiffStatus.UNCHANGED;
 	}
 
 	/**

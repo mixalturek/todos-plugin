@@ -90,7 +90,7 @@ public class TodosResult {
 	/**
 	 * Get the previous report.
 	 * 
-	 * @return the report
+	 * @return the report, empty report or null
 	 */
 	private TodosReport getPreviousReport() {
 		if (build == null) {
@@ -107,7 +107,7 @@ public class TodosResult {
 				TodosConstants.BUILD_SUBDIR);
 
 		if (!destDir.exists()) {
-			return new TodosReport();
+			return null;
 		}
 
 		return TodosParser.parseFiles(destDir.listFiles());
