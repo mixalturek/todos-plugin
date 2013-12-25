@@ -99,6 +99,8 @@ public class TodosProjectAction implements Action, Serializable {
 		AbstractBuild<?, ?> build = getLastFinishedBuild();
 
 		if (build == null) {
+			// Click to the link in menu on the job page before the first build
+			response.sendRedirect2("..");
 			return;
 		}
 
