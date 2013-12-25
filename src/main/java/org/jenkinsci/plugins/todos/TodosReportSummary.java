@@ -25,6 +25,8 @@
 package org.jenkinsci.plugins.todos;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jenkinsci.plugins.todos.model.TodosPatternStatistics;
 import org.jenkinsci.plugins.todos.model.TodosReportStatistics;
@@ -87,22 +89,23 @@ public class TodosReportSummary implements Serializable {
 		StringBuilder builder = new StringBuilder();
 
 		if (current != null) {
-			for (TodosPatternStatistics currentPatternstatistics : current
-					.getPatternStatistics()) {
+			for (String pattern : getAllPatterns(current, previous)) {
 				String commentsDiff = "";
 				String filesDiff = "";
 
+				TodosPatternStatistics currentPatternstatistics = current
+						.getPatternStatistics(pattern);
+
 				if (previous != null) {
+					TodosPatternStatistics previousPatternstatistics = previous
+							.getPatternStatistics(pattern);
+
 					commentsDiff = getDifference(
 							currentPatternstatistics.getNumOccurrences(),
-							previous.getPatternStatistics(
-									currentPatternstatistics.getPattern())
-									.getNumOccurrences());
+							previousPatternstatistics.getNumOccurrences());
 					filesDiff = getDifference(
 							currentPatternstatistics.getNumFiles(),
-							previous.getPatternStatistics(
-									currentPatternstatistics.getPattern())
-									.getNumFiles());
+							previousPatternstatistics.getNumFiles());
 				}
 
 				builder.append("<li><pre style=\"display: inline;\">");
@@ -137,5 +140,35 @@ public class TodosReportSummary implements Serializable {
 		// Minus sign is part of the difference variable (negative number)
 		return ((difference > 0) ? " (+" : " (") + String.valueOf(difference)
 				+ ")";
+	}
+
+	/**
+	 * Get all patterns that are defined in both data sets.
+	 * 
+	 * @param current
+	 *            the current statistics
+	 * @param previous
+	 *            the previous statistics
+	 * @return the patterns
+	 */
+	private static Set<String> getAllPatterns(TodosReportStatistics current,
+			TodosReportStatistics previous) {
+		Set<String> patterns = new HashSet<String>();
+
+		if (current != null) {
+			for (TodosPatternStatistics statistics : current
+					.getPatternStatistics()) {
+				patterns.add(statistics.getPattern());
+			}
+		}
+
+		if (previous != null) {
+			for (TodosPatternStatistics statistics : previous
+					.getPatternStatistics()) {
+				patterns.add(statistics.getPattern());
+			}
+		}
+
+		return patterns;
 	}
 }

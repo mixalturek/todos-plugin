@@ -30,6 +30,10 @@ import hudson.util.ShiftedCategoryAxis;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.jenkinsci.plugins.todos.model.TodosPatternStatistics;
 import org.jfree.chart.ChartFactory;
@@ -102,23 +106,61 @@ public class TodosChartBuilder implements Serializable {
 	 */
 	private static CategoryDataset buildDataset(TodosBuildAction lastAction) {
 		DataSetBuilder<String, NumberOnlyBuildLabel> builder = new DataSetBuilder<String, NumberOnlyBuildLabel>();
+
+		List<TodosBuildAction> allValidActions = new LinkedList<TodosBuildAction>();
+		Set<String> allPatterns = new HashSet<String>();
+
+		getActionsAndPatterns(lastAction, allValidActions, allPatterns);
+
+		for (TodosBuildAction action : allValidActions) {
+			Set<String> remainingPatterns = new HashSet<String>(allPatterns);
+			NumberOnlyBuildLabel buildLabel = new NumberOnlyBuildLabel(
+					action.getBuild());
+
+			for (TodosPatternStatistics statistics : action.getStatistics()
+					.getPatternStatistics()) {
+				builder.add(statistics.getNumOccurrences(),
+						statistics.getPattern(), buildLabel);
+				remainingPatterns.remove(statistics.getPattern());
+			}
+
+			for (String pattern : remainingPatterns) {
+				builder.add(0, pattern, buildLabel);
+			}
+		}
+
+		return builder.build();
+	}
+
+	/**
+	 * Get all valid actions and all patterns defined through all builds.
+	 * 
+	 * @param lastAction
+	 *            the last action
+	 * @param outAllValidActions
+	 *            all valid actions with statistics defined, output parameter
+	 * @param outAllPatterns
+	 *            all patterns defined through all builds
+	 */
+	private static void getActionsAndPatterns(TodosBuildAction lastAction,
+			List<TodosBuildAction> outAllValidActions,
+			Set<String> outAllPatterns) {
+		outAllValidActions.clear();
+		outAllPatterns.clear();
+
 		TodosBuildAction action = lastAction;
 
 		while (action != null) {
 			if (action.getStatistics() != null) {
-				NumberOnlyBuildLabel buildLabel = new NumberOnlyBuildLabel(
-						action.getBuild());
-
 				for (TodosPatternStatistics statistics : action.getStatistics()
 						.getPatternStatistics()) {
-					builder.add(statistics.getNumOccurrences(),
-							statistics.getPattern(), buildLabel);
+					outAllPatterns.add(statistics.getPattern());
 				}
+
+				outAllValidActions.add(action);
 			}
 
 			action = action.getPreviousAction();
 		}
-
-		return builder.build();
 	}
 }
