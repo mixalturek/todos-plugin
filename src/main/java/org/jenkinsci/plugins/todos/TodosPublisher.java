@@ -90,18 +90,22 @@ public class TodosPublisher extends Recorder implements Serializable {
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
 			BuildListener listener) {
 		PrintStream logger = listener.getLogger();
-		TodosReport report = null;
+
+		if (!canContinue(build.getResult())) {
+			logger.format(
+					"%s Skipping results publication since the build is not successful\n",
+					TodosConstants.PLUGIN_LOG_PREFIX);
+			return true;
+		}
 
 		logger.format("%s Starting results publication\n",
 				TodosConstants.PLUGIN_LOG_PREFIX);
 
+		TodosReport report = null;
+
 		try {
-			if (canContinue(build.getResult())) {
-				FilePath workspace = build.getWorkspace();
-				report = workspace.act(new TodosParser(getRealPattern()));
-			} else {
-				report = new TodosReport();
-			}
+			FilePath workspace = build.getWorkspace();
+			report = workspace.act(new TodosParser(getRealPattern()));
 		} catch (IOException e) {
 			logger.format("%s %s: Processing of report files failed\n",
 					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.ERROR);
