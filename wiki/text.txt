@@ -1,0 +1,30 @@
+{jenkins-plugin-info:pluginId=todos|jiraComponent=todos-plugin}
+[!https://buildhive.cloudbees.com/job/jenkinsci/job/todos-plugin/badge/icon!|https://buildhive.cloudbees.com/job/jenkinsci/job/todos-plugin/]
+{excerpt}This Jenkins plugin generates the trend report for TODO, FIXME and similar comments found in project files.{excerpt}
+
+
+!todos_config.png|thumbnail!    !todos_summary.png|thumbnail!    !todos_details.png|thumbnail!    !todos_trend.png|thumbnail!
+
+
+h1. Description
+
+This Jenkins plugin generates the trend report for TODOs ([http://todos.sourceforge.net/]), an open source utility that searches TODO, FIXME and similar comments in project files.
+
+* You can specify the files to scan after a build.
+* Report summary with count of comments and files.
+* Report details in form of sortable table with highlighted differences between current and previous report.
+* Trend graph that displays results from all builds.
+* English, Czech and Russian localization. (Please help to [localize task scanner|Internationalization] for your locale\!)
+
+The current release is available in the [download section|http://maven.jenkins-ci.org/content/repositories/releases/org/jvnet/hudson/plugins/tasks/]. Please use the [mailing lists|JENKINS:Mailing Lists] or [issue tracker|http://issues.jenkins-ci.org/] to ask questions, create feature request or bug reports.
+
+
+h1. Configuration
+
+Configuring the plugin should be self-explanatory. You simply need to generate TODOs XML report and activate TODOs publisher in the project configuration page. Add the path to report files you would like to use and save the configuration. Then the next build will report the comments that were found and the second build will show the trend.
+
+
+h1. Changelog
+
+Release 1.0
+* Initial version.
