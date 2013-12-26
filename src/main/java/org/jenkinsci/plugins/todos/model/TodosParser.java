@@ -72,12 +72,6 @@ public class TodosParser implements FilePath.FileCallable<TodosReport> {
 	public TodosReport invoke(File workspace, VirtualChannel channel)
 			throws IOException {
 		String[] files = findFiles(workspace, filePattern);
-
-		if (files.length == 0) {
-			throw new IOException("No file is matching the input pattern: "
-					+ filePattern);
-		}
-
 		TodosReport report = new TodosReport();
 
 		for (String filename : files) {
@@ -85,10 +79,10 @@ public class TodosParser implements FilePath.FileCallable<TodosReport> {
 				File inputFile = new File(workspace, filename);
 				report = report.concatenate(parse(inputFile), inputFile);
 			} catch (SAXException e) {
-				throw new IOException("Parsing failed: " + filename + ", "
+				throw new IOException("XML parsing failed: " + filename + ", "
 						+ findExceptionMessage(e), e);
 			} catch (JAXBException e) {
-				throw new IOException("Parsing failed: " + filename + ", "
+				throw new IOException("XML parsing failed: " + filename + ", "
 						+ findExceptionMessage(e), e);
 			}
 		}

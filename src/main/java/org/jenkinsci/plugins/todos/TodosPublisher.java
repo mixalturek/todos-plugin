@@ -115,6 +115,12 @@ public class TodosPublisher extends Recorder implements Serializable {
 			return false;
 		}
 
+		if (report.getSourceFiles().size() == 0) {
+			logger.format("%s %s: No file is matching the input pattern: %s\n",
+					TodosConstants.PLUGIN_LOG_PREFIX, TodosConstants.WARNING,
+					getRealPattern());
+		}
+
 		build.addAction(new TodosBuildAction(build, report.getStatistics()));
 
 		try {

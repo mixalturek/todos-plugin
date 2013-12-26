@@ -39,6 +39,9 @@ public class TodosConstants {
 	/** String specifying an error message. */
 	public static final String ERROR = "ERROR";
 
+	/** String specifying a warning message. */
+	public static final String WARNING = "WARNING";
+
 	/** Subdirectory of build results directory where source files are stored. */
 	public static final String BUILD_SUBDIR = "todos-plugin";
 
