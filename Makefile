@@ -48,7 +48,7 @@ MVN_FLAGS = -o
 endif
 
 ifeq ($(SKIP_TESTS), true)
-SKIP_TESTS_OPT = -DskipTests
+SKIP_TESTS_OPT = -Dmaven.test.skip=true -DskipTests=true
 else
 SKIP_TESTS_OPT =
 endif
