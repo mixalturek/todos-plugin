@@ -121,4 +121,4 @@ package:
 
 .PHONY: clean
 clean:
-	rm -rf target work
+	mvn clean
