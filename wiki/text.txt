@@ -24,7 +24,7 @@ This Jenkins plugin generates the trend report for TODOs ([http://todos.sourcefo
 * Report summary with count of comments and files.
 * Report details in form of sortable table with highlighted differences between current and previous report.
 * Trend graph that displays results from all builds.
-* English, Czech and Russian localization. (Please help to [localize task scanner|Internationalization] for your locale\!)
+* English, Czech and Russian localization. (Please help to [localize|Internationalization] this plugin for your locale\!)
 
 
 h1. Screenshots
