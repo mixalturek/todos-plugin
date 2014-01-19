@@ -1,9 +1,19 @@
 {jenkins-plugin-info:pluginId=todos|jiraComponent=todos-plugin}
-[!https://buildhive.cloudbees.com/job/jenkinsci/job/todos-plugin/badge/icon!|https://buildhive.cloudbees.com/job/jenkinsci/job/todos-plugin/]
+
 {excerpt}This Jenkins plugin generates the trend report for TODO, FIXME and similar comments found in project files.{excerpt}
 
 
-!todos_config.png|thumbnail!    !todos_summary.png|thumbnail!    !todos_details.png|thumbnail!    !todos_trend.png|thumbnail!
+{info:title=Important}
+This plugin is fully functional and pretty usable but it is NOT an official Jenkins plugin. It wasn't accepted by the Jenkins team, because it partially duplicates functionality of already existing [JENKINS:Task Scanner Plugin]. The consequences are that Jenkins project infrastructure can't be used for releases, Jenkins Update Center for installation and updates, Jenkins Jira to track possible issues or feature requests and header of this wiki page to track all meta information including a size of user base.
+
+Please use [SourceForge.net infrastructure of TODOs project|http://sourceforge.net/projects/todos/] to ask questions, create feature request or bug reports.
+
+* [http://todos.sourceforge.net/] \- additional information.
+* [https://github.com/mixalturek/todos-plugin/] \- source codes.
+* [http://sourceforge.net/projects/todos/] \- pre-compiled binaries, issue tracker.
+
+[Michal Turek|mailto:mixalturek@users.sf.net]
+{info}
 
 
 h1. Description
@@ -16,15 +26,37 @@ This Jenkins plugin generates the trend report for TODOs ([http://todos.sourcefo
 * Trend graph that displays results from all builds.
 * English, Czech and Russian localization. (Please help to [localize task scanner|Internationalization] for your locale\!)
 
-The current release is available in the [download section|http://maven.jenkins-ci.org/content/repositories/releases/org/jvnet/hudson/plugins/tasks/]. Please use the [mailing lists|JENKINS:Mailing Lists] or [issue tracker|http://issues.jenkins-ci.org/] to ask questions, create feature request or bug reports.
+
+h1. Screenshots
+
+!todos_config.png|thumbnail! !todos_summary.png|thumbnail! !todos_details.png|thumbnail! !todos_trend.png|thumbnail!
 
 
 h1. Configuration
 
-Configuring the plugin should be self-explanatory. You simply need to generate TODOs XML report and activate TODOs publisher in the project configuration page. Add the path to report files you would like to use and save the configuration. Then the next build will report the comments that were found and the second build will show the trend.
+Configuring the plugin should be self-explanatory. You simply need to generate [TODOs XML report|http://todos.sourceforge.net/manual.html] and activate TODOs publisher in the project configuration page. Add the path to report files you would like to use and save the configuration. Then the next build will report the comments that were found and the second build will show the trend.
+
+{code}
+# Minimal configuration, analyze current directory
+todos.sh --out-xml todos.xml
+
+# Output also 5 lines of context, analyze all source directories
+todos.sh --after-context 5 --out-xml todos.xml src*
+
+# Optionally rewrite existing output file, ignore some directories
+todos.sh --force --suppressed .git build dist --after-context 5 --out-xml todos.xml .
+
+...
+{code}
 
 
 h1. Changelog
 
-Release 1.0
+h3. Version 1.0 (Jan 19, 2014)
+
 * Initial version.
+
+
+h1. Sea Also
+
+* [JENKINS:Task Scanner Plugin]
