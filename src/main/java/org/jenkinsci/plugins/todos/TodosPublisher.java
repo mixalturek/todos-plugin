@@ -44,6 +44,7 @@ import java.util.List;
 
 import org.jenkinsci.plugins.todos.model.TodosParser;
 import org.jenkinsci.plugins.todos.model.TodosReport;
+import org.jenkinsci.plugins.todos.model.TodosReport.SlaveFile;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -138,7 +139,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 			return false;
 		}
 
-		for (File file : report.getSourceFiles()) {
+		for (SlaveFile file : report.getSourceFiles()) {
 			logger.format("%s Report successfully processed: %s\n",
 					TodosConstants.PLUGIN_LOG_PREFIX, file.getAbsolutePath());
 		}
@@ -165,7 +166,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 	 * 
 	 * @see TodosConstants#BUILD_SUBDIR
 	 */
-	private void copyFilesToBuildDirectory(List<File> sourceFiles,
+	private void copyFilesToBuildDirectory(List<SlaveFile> sourceFiles,
 			File rootDir, VirtualChannel channel) throws IOException,
 			InterruptedException {
 		File destDir = new File(rootDir, TodosConstants.BUILD_SUBDIR);
@@ -176,7 +177,7 @@ public class TodosPublisher extends Recorder implements Serializable {
 							+ destDir.getAbsolutePath());
 		}
 
-		for (File sourceFile : sourceFiles) {
+		for (SlaveFile sourceFile : sourceFiles) {
 			File masterFile = new File(destDir, Integer.toHexString(sourceFile
 					.hashCode()) + "_" + sourceFile.getName());
 

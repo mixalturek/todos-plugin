@@ -51,6 +51,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(namespace = "http://todos.sourceforge.net", name = "comments")
 public class TodosReport implements Serializable {
+	/** Serial version UID. */
+	private static final long serialVersionUID = 1L;
+
 	/** All comments that were found. */
 	@XmlElement(namespace = "http://todos.sourceforge.net", name = "comment", type = TodosComment.class)
 	private final List<TodosComment> comments;
@@ -60,14 +63,14 @@ public class TodosReport implements Serializable {
 	private final String version;
 
 	/** The list of files from which the original report was created. */
-	private final List<File> sourceFiles;
+	private final List<SlaveFile> sourceFiles;
 
 	/**
 	 * Helper constructor to create an empty instance.
 	 */
 	public TodosReport() {
 		this(Collections.<TodosComment> emptyList(), Collections
-				.<File> emptyList(), "");
+				.<SlaveFile> emptyList(), "");
 	}
 
 	/**
@@ -77,7 +80,7 @@ public class TodosReport implements Serializable {
 	 *            all comments that were found
 	 */
 	public TodosReport(List<TodosComment> comments) {
-		this(comments, Collections.<File> emptyList(), "");
+		this(comments, Collections.<SlaveFile> emptyList(), "");
 	}
 
 	/**
@@ -90,10 +93,10 @@ public class TodosReport implements Serializable {
 	 * @param version
 	 *            the version of the file format if loaded from a file
 	 */
-	private TodosReport(List<TodosComment> comments, List<File> sourceFiles,
-			String version) {
+	private TodosReport(List<TodosComment> comments,
+			List<SlaveFile> sourceFiles, String version) {
 		this.comments = new ArrayList<TodosComment>(comments);
-		this.sourceFiles = new ArrayList<File>(sourceFiles);
+		this.sourceFiles = new ArrayList<SlaveFile>(sourceFiles);
 		this.version = version;
 	}
 
@@ -123,8 +126,8 @@ public class TodosReport implements Serializable {
 		List<TodosComment> commentsList = new ArrayList<TodosComment>(comments);
 		commentsList.addAll(report.getComments());
 
-		List<File> filesList = new ArrayList<File>(sourceFiles);
-		filesList.add(inputFile);
+		List<SlaveFile> filesList = new ArrayList<SlaveFile>(sourceFiles);
+		filesList.add(new SlaveFile(inputFile));
 
 		return new TodosReport(commentsList, filesList, version);
 	}
@@ -155,7 +158,7 @@ public class TodosReport implements Serializable {
 	 * 
 	 * @return unmodifiable list with files
 	 */
-	public List<File> getSourceFiles() {
+	public List<SlaveFile> getSourceFiles() {
 		return Collections.unmodifiableList(sourceFiles);
 	}
 
@@ -382,6 +385,52 @@ public class TodosReport implements Serializable {
 		public void increment(String file) {
 			++numOccurrences;
 			filesWithComment.add(file);
+		}
+	}
+
+	/**
+	 * Helper class to store a file name and an absolute path relative to the
+	 * slave machine.
+	 * 
+	 * @author Michal Turek
+	 */
+	public static class SlaveFile implements Serializable {
+		/** Serial version UID. */
+		private static final long serialVersionUID = 0L;
+
+		/** The file name. */
+		private final String name;
+
+		/** The absolute path to the file. */
+		private final String absolutePath;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param file
+		 *            the file in the file system
+		 */
+		public SlaveFile(File file) {
+			this.name = file.getName();
+			this.absolutePath = file.getAbsolutePath();
+		}
+
+		/**
+		 * Get the file name.
+		 * 
+		 * @return the file name
+		 */
+		public String getName() {
+			return name;
+		}
+
+		/**
+		 * Get the absolute path to the file.
+		 * 
+		 * @return the absolute path
+		 */
+		public String getAbsolutePath() {
+			return absolutePath;
 		}
 	}
 }
