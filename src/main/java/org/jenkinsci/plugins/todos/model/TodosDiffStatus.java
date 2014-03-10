@@ -81,16 +81,12 @@ public enum TodosDiffStatus {
 	 * 
 	 * @return the class
 	 */
-	public String getCss() {
-		return "";
-	}
+	public abstract String getCss();
 
 	/**
 	 * Get localized text.
 	 * 
 	 * @return the localized text
 	 */
-	public String getText() {
-		return "";
-	}
+	public abstract String getText();
 }
